@@ -5,9 +5,11 @@
 - [ostep-homework](https://github.com/remzi-arpacidusseau/ostep-homework)
 
 ## Introduction to Operating Systems  
-- Virtualizing the CPU: OS 試圖將有限數量 CPU 呈現多個程式同時運行、看似擁有無限數量 CPU 的假象。  
-- Virtualizing the Memory: OS 試圖為每個程式分配 memory，呈現每個程式都有 private memory。  
-- Persistence: OS 不會為程式創造虛擬 disk ，預設是所有使用者共享。  
+- Virtualizing 
+  - Virtualizing the CPU: OS 試圖將有限數量 CPU 呈現多個程式同時運行、看似擁有無限數量 CPU 的假象。  
+  - Virtualizing the Memory: OS 試圖為每個程式分配 memory，呈現每個程式都有 private memory。  
+- Concurrency: OS 需要能同時執行多個程式。
+- Persistence: OS 不會為程式創造虛擬 disk ，預設是所有使用者共享。OS 需要管理 Persistence 的 files。
 - 設計 OS  的主要目標：
   - 提供高性能（performance）。
   - 程式之間以及 OS 在程式之間提供保護（protection）。
