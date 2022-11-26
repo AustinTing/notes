@@ -113,7 +113,16 @@ printf("%i\n", *(numbers + 3)); // 8
 ### malloc and free
 
 如果有用到 malloc 就應該用完後 free 它。沒用 malloc 而創的 memory 交給 OS 自己去處理。
+如果忘記 malloc 該用多少的空間，可以 `sizeof()` 知道是多少 bytes。
+
+```C
+int *x = malloc(sizeof(int));
+```
+
 [valgrind](https://valgrind.org/): 協助查看程式是否有造成 memory 明顯錯誤的工具。
 ```sh
 valgrind ./your-program
 ```
+
+Garbage: 宣告變數但不賦值，那個變數裡面就是存垃圾資料。
+

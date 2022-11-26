@@ -23,7 +23,7 @@ int main(void)
 
   string j = "Hello!";
   printf("j address: %p\n", j); // j address: 0x10020ff7d
-  printf("j: %p\n", &j);        // j: 0x16fbf36a0 ?
+  printf("j: %p\n", &j);        // j: 0x16fbf36a0 
 
   // Pointer Arithmtic
   char *k = "Hi!";
@@ -42,11 +42,7 @@ int main(void)
   string u = "abc";
   printf("%s: %p\n", t, t); // abc: 0x1047dbf51
   printf("%s: %p\n", u, u); // abc: 0x1047dbf51
-  printf("%i\n", t == u);   // 1
-  // t[0] = toupper(t[0]); // Bus error: 10
-  // printf("%s: %p\n", t, t);
-  // printf("%s: %p\n", u, u);
-  // printf("%i\n", t == u);
+  printf("%i\n", t == u);   // 1 ??
 
   char *w = "abce";
   char *x = "abce";
@@ -54,15 +50,20 @@ int main(void)
   printf("%c: %p\n", *x, x); // a: 0x1044bbf90
   printf("%i\n", w == x);    // 1
 
-  // Copy
-  char *v = get_string("v: "); // input:  hi!
+  // Copy and Memory
+  char *v = get_string("v: ");     // input:  hi!
   char *y = malloc(strlen(v) + 1); // for /0
   strcpy(y, v);
-  v[0] = toupper(v[0]); 
+  v[0] = toupper(v[0]);
   printf("%c: %p\n", *v, v); // H: 0x6000005c0000
   printf("%c: %p\n", *y, y); // h: 0x6000005c0020
   printf("%i\n", v == y);    // 0
   free(y);
 
-  // Memory
+  // Garbage
+  int g[3];
+  for (int i = 0; i < 3; i++)
+  {
+    printf("g[%i]: %i\n", i, g[i]); // 每次都不太一樣
+  }
 }
