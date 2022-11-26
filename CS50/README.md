@@ -77,3 +77,43 @@ else if 50 > doors[middle]
 3. Θ(n) // ex: 數班上有幾個學生
 4. Θ(log n) 
 5. Θ(1) 
+
+
+## [Memory](https://cs50.harvard.edu/x/2022/weeks/4/)
+
+### Pointer
+
+`&`: 取得變數的 address 。
+`*`: 這個一個 pointer 。
+[Standford Pointer Fun](https://www.youtube.com/watch?v=5VnDaHBi8dM)
+
+```C
+int n = 50;
+int *p = &n;
+```
+
+printf 裡的 `%p`: 印出變數的 address 。
+
+#### Pointer Arithmtic
+
+對 pointer 做加法，電腦會依據存的型別，自動跳下一個 memory 位置。開發者可以不會去考慮每個 type 需要佔據的記憶體大小。
+```C
+int numbers[] = {2, 4, 6, 8};
+printf("%i\n", *numbers);       // 2
+printf("%i\n", *(numbers + 1)); // 4，一次跳 4 個 bytes 拿到 4
+printf("%i\n", *(numbers + 2)); // 6
+printf("%i\n", *(numbers + 3)); // 8
+```
+
+### Compare 
+
+`==` 比較是比對兩個 address 是不是相同。
+字串如果要比較要用 `<string.h>` 裡的 `strcmp(s, t) == 0`。
+
+### malloc and free
+
+如果有用到 malloc 就應該用完後 free 它。沒用 malloc 而創的 memory 交給 OS 自己去處理。
+[valgrind](https://valgrind.org/): 協助查看程式是否有造成 memory 明顯錯誤的工具。
+```sh
+valgrind ./your-program
+```
