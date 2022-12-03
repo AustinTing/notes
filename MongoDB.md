@@ -44,3 +44,8 @@ Is the embedded data shared or private - double check?<br>
 | ---- | ---------- | ----- |
 | 優點 | 1. Document 比較小(通常)。<br>2. 比較不會達到單一 Document 16 MB 上限的限制。<br>3. 每次 query 不用給那些偶爾才用到的資料。<br>4. 減少資料的重複。BUT 當你覺得符合使用情境時，可以不用考慮慮資料的重複。 | 1. 一次 query 就可以取得所有資料。 |
 | 缺點 | 1. 要拿取所有資料，至少要用兩次 `$lookup` 。<br>2. 更新某個資料，有可能就要更新多個 Document。 |   1. 單一 Document 可能會因為 Size 大，導致額外開銷。但可以藉由限制檔案大小或是透過 wire compression 解決。<br>2. 單一 Document 不能超過 16 MB 。 |
+
+### 各種模式比較
+
+![704B5560-797D-4FA4-A0BE-AEFC6382738B](https://user-images.githubusercontent.com/12167111/205423189-65c509ca-2c04-4c38-9e06-dba56ddd80a7.jpg)
+
