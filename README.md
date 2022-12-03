@@ -1,13 +1,11 @@
 # Notes
-Learning Notes
 
-## Web
+討伐一些領域的筆記
 
-網頁切換頁面時，開啟 preserve log 可以儲存 request 紀錄。
-![](assets/chrome-preserve-log.png)
+- [CS50](/CS50/README.md)
 
-## Resources
-- [100 Bytes of CSS to look great everywhere](https://www.swyx.io/css-100-bytes)
-  - 用簡單的 CSS 設定讓網站看起來還不錯。
-- [Effective Shell](https://effective-shell.com/)
-  - Shell 的教學。
+- [Operating Systems - Three Easy Pieces](/Operating%20Systems%20-%20Three%20Easy%20Pieces/README.md)
+
+- [JavaScript](/JavaScript.md)
+
+- [MongoDB](/MongoDB.md)
