@@ -21,3 +21,9 @@ Parent 和 child 都可以訪問文件，也都可以寫入。
 **5. fork() 後，wait() 會返回什麼？如果 child 用的話會怎樣？**
 
 在 parent 用 wait() 會得到 child 的 process id；在 child 用 wait 會得到 -1。；兩個同時用 child 的 wait 會得到 -1，而 parent 會得到 child 的 process id。
+
+**6. waitpid()**
+
+ waitpid() 需要給定 pid 及回傳狀態，讓 parent 知道要等到什麼時候。
+ - [wait vs. waitpid](https://wirelessr.gitbooks.io/working-life/content/wait_vs_waitpid.html)
+ - [linux中waitpid及wait的用法](https://www.twblogs.net/a/5b83317c2b717766a1eb53be)
