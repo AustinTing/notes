@@ -1,5 +1,7 @@
 # CS50
 
+重溫 C 與寫好玩的題目。
+
 ## Preparation
 
 [CS50 Lib](https://cs50.readthedocs.io/libraries/cs50/c/): CS50 寫好的小工具套件。Compile 時要記得加 `-lcs50`。
@@ -12,7 +14,7 @@ clang test.c -lcs50
 [check50](https://cs50.readthedocs.io/projects/check50/en/latest/): 檢查作業的程式。
 
 ```bash
-> pip install check50
+>   cd
 > check50 --local cs50/problems/2022/x/<題目名>
 // ex: check50 --local cs50/problems/2022/x/plurality
 ```
@@ -126,3 +128,4 @@ valgrind ./your-program
 
 Garbage: 宣告變數但不賦值，那個變數裡面就是存垃圾資料。
 
+在 C 語言中，文件的指針會隨著調用 fread 函數而改變。
