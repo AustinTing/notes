@@ -4,7 +4,7 @@
 ## Compile
 
 ```sh
-make filter
+make filter --always-make
 ```
 
 ## Usage
@@ -12,4 +12,5 @@ make filter
 ```sh
  ./filter -g ./images/tower.bmp ./outputs/tower.bmp
 ```
+
 
