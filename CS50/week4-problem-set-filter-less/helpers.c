@@ -64,9 +64,61 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
     }
     return;
 }
+/**
+ * @brief Get the Boxing Average RGBTRIPLE
+ * 
+ * @param heightIndex - 目標的高 index 。
+ * @param widthIndex - 目標的寬 index 。
+ * @param height - image 的高。
+ * @param width - image 的寬。
+ * @param image - 圖片參考
+ * @return RGBTRIPLE 
+ */
+RGBTRIPLE getBoxAverage(int heightIndex, int widthIndex, int height, int width, RGBTRIPLE image[height][width])
+{
+    int count = 0;
+    int blueTotal = 0;
+    int greenTotal = 0;
+    int redTotal = 0;
+    for (int i = 0; i < 9; i++)
+    {
+        int neighborHeightIndex = heightIndex + (i / 3 - 1);
+        int neighborWidthIndex = widthIndex + (i % 3 - 1);
+        // isInbox?
+        if (neighborHeightIndex < 0 || neighborWidthIndex < 0 || neighborHeightIndex >= height || neighborWidthIndex >= width)
+        {
+            continue;
+        }
+        RGBTRIPLE neighbor = image[neighborHeightIndex][neighborWidthIndex];
+        blueTotal = blueTotal + neighbor.rgbtBlue;
+        greenTotal = greenTotal + neighbor.rgbtGreen;
+        redTotal = redTotal + neighbor.rgbtRed;
+        count++;
+    }
+    int blueAverage = (float)blueTotal / count + 0.5;
+    int greenAverage = (float)greenTotal / count + 0.5;
+    int redAverage = (float)redTotal / count + 0.5;
+    RGBTRIPLE average = {blueAverage, greenAverage, redAverage};
+    return average;
+}
 
 // Blur image
 void blur(int height, int width, RGBTRIPLE image[height][width])
 {
+    RGBTRIPLE copy[height][width];
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            copy[i][j] = image[i][j];
+        }
+    }
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            image[i][j] = getBoxAverage(i, j, height, width, copy);
+        }
+    }
     return;
 }
