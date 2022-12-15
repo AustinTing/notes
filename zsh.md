@@ -4,6 +4,8 @@
 
 ## 設定預設 shell
 
+查看現在用哪個 shell: `echo $SHELL`
+
 確認目前有裝的 shell: `cat /etc/shells`
 
 設定預設 shell: `chsh -s /bin/zsh`
@@ -22,7 +24,7 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 直接改 gozilla.zsh-theme，在 `~/.oh-my-zsh/themes/` 裡。
 
 ```sh
-PROMPT='%{$fg_bold[green]%}%c %{$fg_bold[cyan]%}$(git_prompt_info)%{$fg_bold[green]%} % %{$reset_color%}'
+PROMPT='%{$fg_bold[green]%}%c %{$fg_bold[cyan]%}$(git_prompt_info)%{$fg_bold[green]%} % %{$reset_color%}$ '
 
 ZSH_THEME_GIT_PROMPT_PREFIX="("
 ZSH_THEME_GIT_PROMPT_SUFFIX=")"
