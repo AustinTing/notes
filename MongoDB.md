@@ -49,3 +49,68 @@ Is the embedded data shared or private - double check?<br>
 
 ![](/assets/mongodb-patterns-overview.jpg)
 
+## Aggregation
+
+### $group
+
+分組。可以再定義分完組後的新 key 。
+
+**按照書本 category 分類，並算出此分類的平均價格。**
+
+```js
+db.collection.aggregate([
+   {
+      $group: {
+         _id: "$category",
+         avgPrice: { $avg: "$price" }
+      }
+   }
+])
+```
+
+output:
+
+```js
+[
+   {
+      _id: "electronics",
+      avgPrice: 75
+   },
+   {
+      _id: "books",
+      avgPrice: 25
+   }
+]
+```
+
+
+**根據書本 category 分類，並把有這個分類的書籍 name ， push 到新的 names 這個 key。**
+
+```js
+db.collection.aggregate([
+   {
+      $group: {
+         _id: "$category",
+         names: { $push: "$name" }
+      }
+   }
+])
+```
+
+output:
+
+```js
+[
+   {
+      _id: "electronics",
+      names: ["Product A", "Product C"]
+   },
+   {
+      _id: "books",
+      names: ["Product B", "Product D"]
+   }
+]
+```
+## 疑難雜症
+
+DB connect 時如果沒加 `srv` 有可能會出現 timeout 問題。
