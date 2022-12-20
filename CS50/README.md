@@ -128,4 +128,20 @@ valgrind ./your-program
 
 Garbage: 宣告變數但不賦值，那個變數裡面就是存垃圾資料。
 
+
+### Howework
+
+[Lab - volume](./week4-lab-volume/)
+
+[Problem Set - Filter(Less)](./week4-problem-set-filter-less/)
+
 在 C 語言中，文件的指針會隨著調用 fread 函數而改變。
+
+兩 int 四捨五入，可以把某一個先轉成 float 再相除再 +0.5:
+
+```C
+int a = 3;
+int b = 2;
+int quotient = a / b; // quotient = 1
+int roundedQuotients = (float)a/b + 0.5; // roundedQuotients = 2
+```
