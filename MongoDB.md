@@ -111,6 +111,19 @@ output:
    }
 ]
 ```
+
+** 如果 Document 裡面有兩個 key ， typeA 和 typeB 。找出這兩個 Key 相等的 Document。**
+
+```js
+db.collection.aggregate([
+   {
+      $match: {
+         $expr: { $eq: ['$typeA', '$typeB'] }
+      }
+   }
+])
+```
+
 ## 疑難雜症
 
 DB connect 時如果沒加 `srv` 有可能會出現 timeout 問題。
