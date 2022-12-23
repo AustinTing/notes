@@ -51,6 +51,22 @@ Is the embedded data shared or private - double check?<br>
 
 ## Aggregation
 
+### $match
+
+過濾條件
+
+** 如果 Document 裡面有兩個 key ， typeA 和 typeB 。找出這兩個 Key 相等的 Document。**
+
+```js
+db.collection.aggregate([
+   {
+      $match: {
+         $expr: { $eq: ['$typeA', '$typeB'] }
+      }
+   }
+])
+```
+
 ### $group
 
 分組。可以再定義分完組後的新 key 。
@@ -112,13 +128,19 @@ output:
 ]
 ```
 
-** 如果 Document 裡面有兩個 key ， typeA 和 typeB 。找出這兩個 Key 相等的 Document。**
+### $set
+
+更改某個 key 的值
+
+**將 _id 轉成字串**
 
 ```js
 db.collection.aggregate([
    {
-      $match: {
-         $expr: { $eq: ['$typeA', '$typeB'] }
+      $set: {
+         _id: {
+         $toString: '$_id'
+         }
       }
    }
 ])
