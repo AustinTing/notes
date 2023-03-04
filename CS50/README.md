@@ -297,4 +297,73 @@ O(k), k 為給定的字串長度
 空間複雜度超高
 
 
+## Week 6 Python
 
+### Functions
+
+#### range
+
+```py
+range(5)           # 返回 [0, 1, 2, 3, 4]
+range(1, 5)        # 返回 [1, 2, 3, 4]
+range(0, 10, 2)    # 返回 [0, 2, 4, 6, 8]
+range(10, 0, -1)   # 返回 [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+```
+
+#### input
+
+要注意 input 回傳的是字串。
+
+```py
+num = int(input("Please enter your age: "))
+```
+#### print
+
+參數 end 可以設定更改原本結尾預設是換行的行為
+
+```py
+print("Hello,", end='')
+print("World!", end='')
+print("My", end='')
+print("name", end='')
+print("is", end='')
+print("Alice.")
+// Hello,World!MynameisAlice.
+```
+
+### Issues
+
+#### Truncation
+
+Python 也是有尾數會被截斷問題。
+
+```py
+x = int(input("x: ")) // 1
+y = int(input("y: ")) // 3
+z = x / y
+print(z) // 0.3333333333333333
+```
+
+#### Floating Point Imprecision 
+
+Python 也是要注意浮點數運算時的精度問題。
+
+```py
+x = int(input("x: ")) // 1
+y = int(input("y: ")) // 3
+z = x / y
+print(f"{z: .50f}") // .33333333333333331482961625624739099293947219848633
+```
+
+#### ~~Integer Overflow~~
+
+Python 不會有這個問題，但要注意效能。
+
+### Try Catch
+
+```py
+try:
+    x = int(input("Please enter a number: "))
+except ValueError:
+    print("Oops! That was not a valid number. Please try again...")
+```
