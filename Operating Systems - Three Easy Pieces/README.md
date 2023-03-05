@@ -68,7 +68,7 @@ Child 不會從 main 開始執行，而是從 fork() 後開始，就像自己呼
 
 **wait()**
 
-利用 wait() 可以強制讓 Parent 或是 child 強制等對方結束在執行。BUT 也要注意不是絕對。（開發時請參閱~~公開說明書~~man）
+利用 wait() 可以強制讓 Parent ~~或是 child ~~強制等 child 結束再執行。BUT 也要注意不是絕對。（開發時請參閱~~公開說明書~~man）
 
 **exec()**
 
