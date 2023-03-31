@@ -8,6 +8,8 @@
 
 Producers 和 Consumers 互相解偶，互不知彼此，所以可以各自添加、更新或是 scale up 。
 
+![](/assets/apache-kafka-fundamentals-fundamentals.drawio.png)
+
 ### Producers
 
 能將 message 傳入 Kafka Cluster，傳入之後可能會收到 ack 。
@@ -15,6 +17,10 @@ Producers 和 Consumers 互相解偶，互不知彼此，所以可以各自添�
 ### Brokers
 
 運行 Kafka 的 process ，有自己獨立的硬碟空間。
+
+接收從 Producers 傳來的 Messages 並儲存。
+
+每個 Broker 管理多個 Partitions。
 
 一群相連在一起 Broker 的稱 Kafka Cluster。如果用雲服務，不用太在意這一塊，因為底層實作可能是容器或是機器。
 
