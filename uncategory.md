@@ -23,6 +23,12 @@
 網頁切換頁面時，開啟 preserve log 可以儲存 request 紀錄。
 ![](assets/web-chrome-preserve-log.png)
 
+## Drawio
+
+匯出時選 PNG ，選擇`包含我的圖表的副本`後，此 PNG 可以再度用 drawio 編輯。
+
+匯出固定選`300%`，寬度選`15`。　
+
 ## Resources
 - [100 Bytes of CSS to look great everywhere](https://www.swyx.io/css-100-bytes)
   - 用簡單的 CSS 設定讓網站看起來還不錯。
