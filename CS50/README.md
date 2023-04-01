@@ -381,3 +381,15 @@ except ValueError:
 `REAL` 類型是一個浮點數類型，可以存儲 8 字節的 IEEE 浮點數。它可以存儲任意小數位數的數字，但在精度方面可能存在一些誤差。
 
 NUMERIC 類型比 REAL 類型更加精確，但在存儲和計算方面需要更多的資源。因此，在使用這兩種類型之前，需要根據應用程序的需求和計算要求來選擇合適的類型。
+
+### Week 8 Web
+
+Transmission Control Protocol(TCP)
+
+cURL: connecnt to URL / [Client for URL](https://en.wikipedia.org/wiki/CURL)
+
+Server 其實是指軟體，它收到 requests 會回 response。
+
+輸入網址會變超連結其實是各家軟體實作的。
+
+Submit form 後，form 會將資料用 query string 的方式帶到 action 屬性指定的 URL 。
