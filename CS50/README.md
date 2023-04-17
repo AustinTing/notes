@@ -393,3 +393,13 @@ Server 其實是指軟體，它收到 requests 會回 response。
 輸入網址會變超連結其實是各家軟體實作的。
 
 Submit form 後，form 會將資料用 query string 的方式帶到 action 屬性指定的 URL 。
+
+### Week 10 Emoji
+
+[Unicode Consortium](https://unicode.org/consortium/consort.html) 主要有三個 projects:
+
+1. Encoding character
+2. Localization Resources
+    - Common Locale Data Repository(CLDR): 目的是為了解決不同語言和文化之間的本地化差異，提供標準化的數據集，使軟件開發人員能夠更容易地開發支持多語言和多地區的應用程序。CLDR的數據是通過對不同地區的本地專家進行調查和研究來獲得的，並且定期進行更新和維護。
+3. Programming library
+    - ICU是基於Unicode標準和CLDR項目開發的，它提供了一個豐富的API和工具，使軟件開發人員能夠更容易地開發支持多語言和多地區的應用程序。
