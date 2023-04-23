@@ -403,3 +403,16 @@ Submit form 後，form 會將資料用 query string 的方式帶到 action 屬�
     - Common Locale Data Repository(CLDR): 目的是為了解決不同語言和文化之間的本地化差異，提供標準化的數據集，使軟件開發人員能夠更容易地開發支持多語言和多地區的應用程序。CLDR的數據是通過對不同地區的本地專家進行調查和研究來獲得的，並且定期進行更新和維護。
 3. Programming library
     - ICU是基於Unicode標準和CLDR項目開發的，它提供了一個豐富的API和工具，使軟件開發人員能夠更容易地開發支持多語言和多地區的應用程序。
+
+### Cybersecurity
+
+4-character password: 94^4 = 78,074,896 種組合
+
+8-character password: 94^8 = 6,095,689,385,410,816 種組合 (quadrillion)
+
+網路安全是一種比較的概念。
+
+Ransomware 是一種惡意軟體（malware），也被稱為勒索軟體。它的攻擊方式是透過植入計算機或行動裝置中，加密或鎖定被感染裝置中的檔案或系統，進而勒索受害者支付贖金（ransom）來解鎖或解密被封鎖的檔案或系統。
+
+
+
