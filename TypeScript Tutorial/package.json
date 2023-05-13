@@ -1,0 +1,13 @@
+{
+  "name": "typescript-turoial",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Austin Ting",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
