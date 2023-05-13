@@ -126,8 +126,9 @@ function getLength(num: string | number): number {
 
 ## Interface
 
+### 擴充
 
-interface 可以之後被擴充屬性。
+interface 被擴充屬性。
 
 
 ```ts
@@ -154,7 +155,7 @@ interface Person {
 }
 ```
 
-## 唯讀屬性
+### 唯讀屬性
 
 可以利用 `readonly` 關鍵字將屬性設為唯讀，只能在創建時賦值。
 
@@ -170,8 +171,69 @@ tom1.id = 1234; // Cannot assign to 'id' because it is a read-only property.
 ```
 
 
+## Array
 
+有些型別是 Array-like Object，但不是 Array。例如 `arguments`。無法直接指派給 Array。
 
+```ts
+function sum() {
+  let args: number[] = arguments; // error TS2740: Type 'IArguments' is missing the following properties from type 'number[]': pop, push, concat, join, and 24 more.
+}
+```
+
+## Function
+
+### 可選引數的函式
+
+可選引數一定接在必需引數後面。
+
+```ts
+// error TS1016: A required parameter cannot follow an optional parameter.
+function buildName(firstName?: string, lastName: string) {
+  if (firstName) {
+    return firstName + " " + lastName;
+  } else {
+    return lastName;
+  }
+}
+```
+
+但如果有預設值，則可以接在必需引數前面。
+
+```ts
+function buildName(firstName: string = 'Austin', lastName: string) {
+  if (lastName) {
+    return firstName + " " + lastName;
+  } else {
+    return firstName;
+  }
+}
+```
+
+### 過載
+
+函式可以有多個型別的定義，這稱為函式的重載。
+
+如果需要函式接受不同型別的引數，並根據引數的**型別**返回不同的結果（不同的型別），就可以使用這個特性。
+
+比如一個函式想要傳入數字就返回數字，傳入字串就返回字串，這時就可以使用函式的重載。
+
+```ts
+function reverse(x: number): number;
+function reverse(x: string): string;
+function reverse(x: number | string): number | string | undefined {
+  if (typeof x === 'number') {
+      return Number(x.toString().split('').reverse().join(''));
+  } 
+  if (typeof x === 'string') {
+      return x.split('').reverse().join('');
+  }
+}
+```
+
+```ts
+
+```ts
 
 
 

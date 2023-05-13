@@ -11,4 +11,5 @@ let tom1 = {
     age: 25,
     gender: 'male'
 };
-tom1.id = 1234;
+// Cannot assign to 'id' because it is a read-only property.
+// tom1.id = 1234; 
