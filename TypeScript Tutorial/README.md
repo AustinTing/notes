@@ -1,4 +1,4 @@
- # [TypeScript 新手指南]https://willh.gitbook.io/typescript-tutorial/
+ # [TypeScript 新手指南](https://willh.gitbook.io/typescript-tutorial/)
 
 # 簡介
 
@@ -231,10 +231,29 @@ function reverse(x: number | string): number | string | undefined {
 }
 ```
 
-```ts
+## 型別斷言（Type Assertion）
+
+可以使用 `<型別>值` 或是 `值 as 型別` 手動指定一個值的型別。
+
+像是使用 Union Types 時，要確定變數的型別，才能存取該型別的屬性或方法，這時就可以使用型別斷言。
 
 ```ts
+function getLength(something: string | number): number {
+    if ((<string>something).length) {
+        return (<string>something).length;
+    } else {
+        return something.toString().length;
+    }
+}
+```
 
+(意外發現整個專案不允許重複的函式名稱，所以 `type-assertion` 的 `getLength` 會與 `union-types` 的 `getLength` 衝突。)
 
+## 宣告檔案（Declaration Files）
 
+### 幫套件建立宣告檔案
+
+1. 先確認是否以有宣告檔案，可以檢查套件的 `package.json` 是否有 `types` 屬性或是 `index.d.ts` 檔案。
+2. 是否有在 `@types` 資料夾中找到宣告檔案或是有[現成](https://www.npmjs.com/~types)的宣告檔案。
+3. 如果都沒有，就要自己建立宣告檔案。建議建立一個 `types` or `@types` 資料夾，並在 `tsconfig.json` 中設定 `typeRoots` 或是 `paths` 和 `baseUrl` 。
 

@@ -22,6 +22,6 @@ let n: null = null;
 // let num: number = undefined; // Type 'undefined' is not assignable to type 'number'.
 
 // void cannot be assigned to any other type
-let v: void;
+// let v: void = null;
 // let num: number = v; // Type 'void' is not assignable to type 'number'.
 // let undef: undefined = v; // Type 'void' is not assignable to type 'undefined'.

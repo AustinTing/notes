@@ -30,3 +30,11 @@ function reverse(x: number | string): number | string | undefined{
         return x.split('').reverse().join('');
     }
 }
+
+// Cannot declare function as below:
+// function reverse1(n: number): number {
+//   return Number(n.toString().split('').reverse().join(''));
+// }
+// function reverse1(s: string): string {
+//   return x.split('').reverse().join('');
+// }
