@@ -1,20 +1,20 @@
 # [Apache Kafka Fundamentals](https://www.youtube.com/playlist?list=PLa7VYi0yPIH2PelhRHoFR5iQgflg-y6JA)
 
-## [動機](https://www.youtube.com/watch?v=BsojaA1XnpM)
+# [動機](https://www.youtube.com/watch?v=BsojaA1XnpM)
 
 如何打造可以處理所有即時 event 及可以將 event 歷史回顧的單一平台。
 
-## [Fundamentals](https://www.youtube.com/watch?v=B5j3uNBH8X4)
+# [Fundamentals](https://www.youtube.com/watch?v=B5j3uNBH8X4)
 
 Producers 和 Consumers 互相解偶，互不知彼此，所以可以各自添加、更新或是 scale up 。
 
-![](/assets/apache-kafka-fundamentals-fundamentals.drawio.png)
+![](./assets/apache-kafka-fundamentals-fundamentals.drawio.png)
 
-### Producers
+## Producers
 
 能將 message 傳入 Kafka Cluster，傳入之後可能會收到 ack 。
 
-### Brokers
+## Brokers
 
 運行 Kafka 的 process ，有自己獨立的硬碟空間。
 
@@ -25,22 +25,22 @@ Producers 和 Consumers 互相解偶，互不知彼此，所以可以各自添�
 一群相連在一起 Broker 的稱 Kafka Cluster。如果用雲服務，不用太在意這一塊，因為底層實作可能是容器或是機器。
 
 
-### Consumers
+## Consumers
 
 將資料從 Kafka Cluster 拉出來處理，處理後也可以再寫入 Kafka Cluster 。
 
 Kafka 紀錄 consumer 上次處理到哪一筆 message （Consumer offset）。Consumer offset 存放在特定的 topic。
 
 
-### Zookeeper
+## Zookeeper
 
 管理 cluster，協助分散式的 Brokers 在一些事情上達成一致。（有可能未來會從 Kafka 中移除）
 
-### Topics
+## Topics
 
 不同 Message 的分類。由開發者自己定義。理論上沒有上限，但實務上有。
 
-#### Partition
+### Partition
 
 將同個 Topic 切分成多份儲存，讓不同 brokers 有著同一個 topic 但不同的 partition ，這樣就可以一起寫入同一個 topic 的 message 。這也是 Kafka 可以 Scale up 的關鍵因素。
 
@@ -48,7 +48,7 @@ Kafka 紀錄 consumer 上次處理到哪一筆 message （Consumer offset）。C
 
 為了 load balancing 和 semantic partitioning ，在設計 producer 時，要常常思考 Partitioning stragegy。如果沒有 hash key ，預設 Partitioning stragegy 就是 Round-Robin ；有 hash key 就是 hash key % number of partitions，所以只要有相同的 hash key 就會進入一樣的 partition。這樣如果資料需要被有序的處理，就可以用同 partition 一一存入。
 
-#### Segments
+### Segments
 
 Message 真正被紀錄的地方，真正的 file。
 
@@ -62,8 +62,66 @@ Consumer 只會讀 log ，讀 log 不會讓 log 產生變化。
 
 當 consumer 可以很快地消化 log ，就可以做到很即時的系統。當然，也可以寫一個新的 consumer 從頭處理所有資料。
 
-## [How Kafka Works](https://www.youtube.com/watch?v=jY02MB-sz8I)
+# [How Kafka Works](https://www.youtube.com/watch?v=jY02MB-sz8I)
+
+## Producer
+
+## Consumer
+
+可以 Subsribe 多個 Topic ，也可以用 Regex 來 subscribe 。
+
+除了一般的 Message Handling ，也可以開發 Error Handling 。
+
+通常會有個 while true 永遠定期去 polling 資料。
+
+## Partition Leadership and Replication
+
+Partion 數量和 Broker 數量彼此沒有特別依賴。你可以一個 topic 有 200 個 Partition 但只有 4 個 Broker；也可以 1 個 Partition 但有 10 個 Brokers。
+
+具體來說，當 Broker 掛掉時，Kafka 集群會自動啟動故障轉移（Failover）過程，將該 Broker 上的 partition 的 **Leader** 角色轉移到其它 Broker 上的 Partition Replica。當故障的 Broker 能重新啟動時，它會成為該 Partition 的 Replica 之一，但不會再擔任 Leader 的角色。
+
+## Data Retention Policy
+
+通常資料是會保留一週（7天）。可以針對全部或某個 Topic 設定日期。也可以針對商業、成本、法規考量設定不同的保留時間。
+
+清除過期資料是以 segment 為單位。
+
+## Producer Design
+
+當 Producer Record `send()` 給 Producer 後，Serializer 會 serialize 資料，交給 Partitioner 。
+
+Partitioner 將資料分配到正確的 Partition 。分配的規則可以自訂。分配好 partition 的 Message 會先存在 batch 等待送給 Kafka Broker 。
+
+### Partitioner 
+
+#### RoundRobinPartitioner
+
+按照輪詢的方式將消息分配到 partition 中。當 Producer 發送消息時，RoundRobinPartitioner 會將消息依次分配給不同的 partition，以實現負載均衡的目標。
+
+#### HashedPartitioner
+
+將消息的 key 作 Hash，然後用 `Hash value %  Partition 數量` 得出該消息應該分配到哪個 partition 中。這樣可以確保相同的 key 的消息總是被分配到同一個 partition 中，以實現數據局部性的目標。
 
 
+## Producer Guarantees
 
+Producer send Message 後，Broker 有三種模式回應。分別是 none, LEADER, ALL。
+
+### Acks 0(none)
+
+Broker 完全不回 ack ，Producer 一直 `send` 就好。延遲最低，也是最不安全。
+
+### Acks 1(LEADER)
+
+只有 LEADER 確認有收到就會回傳 ack 。
+
+### Acks -1 (ALL)
+
+Message 進入 Leader Partition 後，Replica 同步時會回 ack 給 Leader Partition 。等所有 Replica 都確認有同步後， Leader Partition 再回 ack 給 Produce。延遲最高，但也最安全。
+
+## Idempotent producer
+
+確保每次 Message 只會被存入一次，Producer 發送重複的 Message 也不會被存入。
+
+##
 
