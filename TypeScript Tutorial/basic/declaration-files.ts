@@ -14,5 +14,3 @@ let options: Options = {
         name: 'foo'
     }
 };
-
-
