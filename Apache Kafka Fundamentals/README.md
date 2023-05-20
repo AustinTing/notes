@@ -44,7 +44,7 @@ Kafka 紀錄 consumer 上次處理到哪一筆 message （Consumer offset）。C
 
 將同個 Topic 切分成多份儲存，讓不同 brokers 有著同一個 topic 但不同的 partition ，這樣就可以一起寫入同一個 topic 的 message 。這也是 Kafka 可以 Scale up 的關鍵因素。
 
-如果一個 partition 只給一個 broker 處理，如果那個 broker 掛了，那個 partition 也會跟著掛掉。所以 Kafka 根據 replication factor (數量) 產生多個 partition 的 replication。其中一個 replica 稱為 Leader ，其他的稱 follower 。Producer 產生 message 時，會連接負責處理 Leader partition 的 broker ，將 message 寫入 Kafka。有著 follower partition 的 broker 則會僅快地向的 Leader partition 的 broker 同步資料。
+如果一個 partition 只給一個 broker 處理，如果那個 broker 掛了，那個 partition 也會跟著掛掉。所以 Kafka 根據 replication factor (數量) 產生多個 partition 的 replication。其中一個 replica 稱為 Leader ，其他的稱 follower 。Producer 產生 message 時，會連接負責處理 Leader partition 的 broker ，將 message 寫入 Kafka。有著 follower partition 的 broker 則會僅快地向 Leader partition 的 broker 同步資料。
 
 為了 load balancing 和 semantic partitioning ，在設計 producer 時，要常常思考 Partitioning stragegy。如果沒有 hash key ，預設 Partitioning stragegy 就是 Round-Robin ；有 hash key 就是 hash key % number of partitions，所以只要有相同的 hash key 就會進入一樣的 partition。這樣如果資料需要被有序的處理，就可以用同 partition 一一存入。
 
@@ -56,7 +56,7 @@ Message 真正被紀錄的地方，真正的 file。
 
 當創建 Topic 時，Kafka 會自動分配該 Topic 的 partition ，但不會自動追蹤這些 partition 的大小，也不會自動移動檔案。所以，開發者要負責維持 partition 的平衡。
 
- message 只會一直加在 Segments 的最後，之前寫入的資料不可改變。
+Message 只會一直加在 Segments 的最後，之前寫入的資料不可改變。
 
 Consumer 只會讀 log ，讀 log 不會讓 log 產生變化。
 
@@ -103,25 +103,45 @@ Partitioner 將資料分配到正確的 Partition 。分配的規則可以自訂
 將消息的 key 作 Hash，然後用 `Hash value %  Partition 數量` 得出該消息應該分配到哪個 partition 中。這樣可以確保相同的 key 的消息總是被分配到同一個 partition 中，以實現數據局部性的目標。
 
 
-## Producer Guarantees
+### Producer Guarantees
 
 Producer send Message 後，Broker 有三種模式回應。分別是 none, LEADER, ALL。
 
-### Acks 0(none)
+**Acks 0 (none)**
 
 Broker 完全不回 ack ，Producer 一直 `send` 就好。延遲最低，也是最不安全。
 
-### Acks 1(LEADER)
+**Acks 1(LEADER)**
 
 只有 LEADER 確認有收到就會回傳 ack 。
 
-### Acks -1 (ALL)
+**Acks -1 (ALL)**
 
 Message 進入 Leader Partition 後，Replica 同步時會回 ack 給 Leader Partition 。等所有 Replica 都確認有同步後， Leader Partition 再回 ack 給 Produce。延遲最高，但也最安全。
 
-## Idempotent producer
+### Delivery Guarantees
 
-確保每次 Message 只會被存入一次，Producer 發送重複的 Message 也不會被存入。
+**At most once**
+
+有可能會掉資料，但不會重複。
+
+**At least once**
+
+有可能會重複，但不會掉資料。
+
+**Exactly once**
+
+不會掉資料，也不會重複。是一種 Idempotent producer（確保每次 Message 只會被存入一次，Producer 發送重複的 Message 也不會被存入）。
+
+> ChatGPT
+> Idempotent Producer 通過序列號和重試機制確保消息的幂等性，即相同的消息在發送過程中只會被發送一次。這避免了由於重試或錯誤導致的重複處理或數據丟失問題。Idempotent Producer 的幂等性保證僅適用於單個 Producer 實例的生命週期內，並需要將相關配置設置為啟用。
+
+Atomic broadcast problem 提到說在 distributive messaging system 中，要達到 exactly once delivery 是不可能的。但在 Kafka，就算傳多次 message 也有可以實現一筆 message 只被處理一次而達到像是 exactly once delivery 的效果。
+
+Kafka 中的 transaction API，使用起來就像一般 DB 的 transaction 一樣。而這個 transaction API 可以確保每筆 message 只會被處理一次。
+
+## Consumer Group
+
 
 ##
 
