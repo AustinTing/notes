@@ -4,7 +4,7 @@ console.log(isPositive(5)); // Output: true
 console.log(isPositive(-3)); // Output: false
 
 // Test declaration file for custom library
-import { name, getName, Animal, Directions, Options } from 'test-declaration';
+import { name, getName, Animal, Directions, Options } from 'test-declaration'; // TODO: Why is this not working?
 console.log(name);
 let myName = getName();
 let cat = new Animal('Tom');

@@ -315,3 +315,59 @@ console.log(Days[3] === "Wed"); // true
 ```ts
 enum Color {Red = "red".length, Green, Blue}; // 列舉成員必須有初始設定式。ts(1061)
 ```
+
+## Class
+
+要注意有些 TS 的語法雖然會在編譯時報錯提醒使用者，但編譯後的 JS 仍然可以執行。
+
+像是 private 和 protected 修飾符，編譯後的 JS 並不會真的將屬性設為 private 或 protected，只是在編譯時會檢查是否有違反 private 或 protected 的規則。
+
+```ts
+class Animal {
+  private name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+let a = new Animal('Jack');
+console.log(a.name); //  error TS2341: Property 'name' is private and only accessible within class 'Animal'.
+a.name = 'Tom';
+console.log(a.name); //  error TS2341: Property 'name' is private and only accessible within class 'Animal'.
+```
+
+上面 build 完的 JS 還是可以執行。
+
+```
+Jack
+Tom
+```
+
+## Classes and Interfaces
+
+TS 的 interface 可以繼承 class。
+
+```ts
+class Point {
+    x: number;
+    y: number;
+}
+
+interface Point3d extends Point {
+    z: number;
+}
+
+let point3d: Point3d = {x: 1, y: 2, z: 3};
+``` 
+
+PS 如果 tsconfig.json 中的 `strictPropertyInitialization` 設為 true，則會報錯。
+
+```
+error TS2564: Property 'y' has no initializer and is not definitely assigned in the constructor.
+```
+
+
+
+
+
+
