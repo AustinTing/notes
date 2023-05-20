@@ -261,3 +261,11 @@ function getLength(something: string | number): number {
 > ChatGPT
 > Use the @types organization for most third-party packages, as it ensures compatibility with the TypeScript ecosystem and provides a centralized repository for type declaration files. 
 > Use the types directory for custom type declaration files specific to your codebase or packages that don't have official @types packages available.
+
+## 內建物件（Built-in Objects）
+
+NodeJS 不是內建物件，用 NodeJS 寫 TypeScript 要引入 `@types/node` 套件。
+
+```sh
+npm install @types/node --save-dev
+```
