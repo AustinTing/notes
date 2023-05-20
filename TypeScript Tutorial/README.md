@@ -255,5 +255,9 @@ function getLength(something: string | number): number {
 
 1. 先確認是否以有宣告檔案，可以檢查套件的 `package.json` 是否有 `types` 屬性或是 `index.d.ts` 檔案。
 2. 是否有在 `@types` 資料夾中找到宣告檔案或是有[現成](https://www.npmjs.com/~types)的宣告檔案。
+    - 如果用像是 `yarn add @types/jquery --save-dev` 安裝，則 `@types` 資料夾會建立在 `node_modules` 資料夾中。
 3. 如果都沒有，就要自己建立宣告檔案。建議建立一個 `types` or `@types` 資料夾，並在 `tsconfig.json` 中設定 `typeRoots` 或是 `paths` 和 `baseUrl` 。
 
+> ChatGPT
+> Use the @types organization for most third-party packages, as it ensures compatibility with the TypeScript ecosystem and provides a centralized repository for type declaration files. 
+> Use the types directory for custom type declaration files specific to your codebase or packages that don't have official @types packages available.

@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+is-positive@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/is-positive/-/is-positive-3.1.0.tgz#857db584a1ba5d1cb2980527fc3b6c435d37b0fd"
+  integrity sha512-8ND1j3y9/HP94TOvGzr69/FgbkX2ruOldhLEsTWwcJVfo4oRjwemJmJxt7RJkKYH8tz7vYBP9JcKQY8CLuJ90Q==
+
 typescript@^5.0.4:
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.4.tgz#b217fd20119bd61a94d4011274e0ab369058da3b"
