@@ -269,3 +269,49 @@ NodeJS 不是內建物件，用 NodeJS 寫 TypeScript 要引入 `@types/node` �
 ```sh
 npm install @types/node --save-dev
 ```
+
+# Advanced
+
+## Enum
+
+Enum 會自動幫未手動賦值的每個列舉成員依序賦值 0, 1, 2, 3, ...，讀取時可以用成員讀取賦值的數字，也可以用數字讀取成員。
+
+```ts
+enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
+
+console.log(Days["Sun"] === 0); // true
+console.log(Days["Sat"] === 6); // true
+
+console.log(Days[0] === "Sun"); // true
+console.log(Days[6] === "Sat"); // true
+```
+
+手動賦值的話，後面的成員會依序加 1。
+```ts
+enum Days {Sun = 7, Mon = 1.5, Tue, Wed, Thu, Fri, Sat};
+
+console.log(Days["Sun"] === 7); // true
+console.log(Days["Mon"] === 1.5); // true
+console.log(Days["Tue"] === 2.5); // true
+console.log(Days["Sat"] === 6.5); // true
+```
+
+
+手動賦值的話，後面的成員會依序加 1。要注意如果手動賦值與自動賦值的值重複，TypeScript 不會檢查，但會以後面的成員為主。
+
+
+```ts
+enum Days {Sun = 3, Mon = 1, Tue, Wed, Thu, Fri, Sat};
+
+console.log(Days["Sun"] === 3); // true
+console.log(Days["Wed"] === 3); // true
+console.log(Days["Sun"] === Days["Wed"]); // true
+console.log(Days[3] === "Sun"); // false
+console.log(Days[3] === "Wed"); // true
+```
+
+如果自動賦值在手動賦值之後，前面的成員賦值是 computed member，那後面的成員會因為無法知道確切的初始值而報錯。
+
+```ts
+enum Color {Red = "red".length, Green, Blue}; // 列舉成員必須有初始設定式。ts(1061)
+```
