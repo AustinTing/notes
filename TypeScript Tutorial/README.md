@@ -366,8 +366,121 @@ PS 如果 tsconfig.json 中的 `strictPropertyInitialization` 設為 true，則�
 error TS2564: Property 'y' has no initializer and is not definitely assigned in the constructor.
 ```
 
+## Generic 泛型
+
+在定義函式、介面或類別時，不預先指定具體的型別，而在使用時再指定型別的一種特性。
+
+再呼叫時如果沒有指定型別，則會根據傳入的參數自動推斷出型別。
 
 
+```ts
+function createArray<T>(length: number, value: T): Array<T> {
+    let result: T[] = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
+createArray<string>(3, 'x'); // ['x', 'x', 'x']
+createArray(3, 'x'); // ['x', 'x', 'x']
+```
+
+### Generic Constraints 泛型約束
+
+函式使用泛型時，因為不知道傳入的參數的型別，所以不能隨意操作傳入的參數。
+
+這時，可以利用 `extends` 關鍵字來來約束泛型，只允許傳入擁有特殊形狀的型別。
+
+```ts
+interface Lengthwise {
+  length: number;
+}
+
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+  console.log(arg.length);
+  return arg;
+}
+
+loggingIdentity("hello"); // 5
+// loggingIdentity(3); // 類型 'number' 的引數不可指派給類型 'Lengthwise' 的參數。
+```
+
+多個泛型參數之間也可以相互約束。
+
+```ts
+function copyFields<T extends U, U>(target: T, source: U): T {
+  for (let id in source) {
+      target[id] = (<T>source)[id];
+  }
+  return target;
+}
+
+let x = { a: 1, b: 2, c: 3, d: 4 };
+
+const result = copyFields(x, { b: 10, d: 20 });
+console.log('copyFields result:', result); // { a: 1, b: 10, c: 3, d: 20 }
+```
+
+### 泛型介面
+
+使用含有泛型的介面來定義函式的形狀時，要注意泛型的位置會影響使用時需不需要指定型別。
+
+```ts
+
+interface CreateArrayFunc {
+    <T>(length: number, value: T): Array<T>; // 這這邊使用泛型。
+}
+
+let createArray: CreateArrayFunc; // 宣告時不用指定型別。
+createArray = function<T>(length: number, value: T): Array<T> {
+    let result: T[] = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
+
+createArray(3, 'x'); // ['x', 'x', 'x']
+```
+
+```ts
+interface CreateArrayFunc<T> { // 這這邊使用泛型。
+    (length: number, value: T): Array<T>;
+}
+
+let createArray: CreateArrayFunc<any>; // 宣告時要指定型別。
+createArray = function<T>(length: number, value: T): Array<T> {
+    let result: T[] = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
+
+createArray(3, 'x'); // ['x', 'x', 'x']
+```
 
 
+### 泛型參數預設值
 
+泛型參數可以指定預設值。當調用時沒有傳入參數，會使用預設值。
+
+```ts
+function createArray<T = string>(length: number, value: T): Array<T> {
+    let result: T[] = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
+
+createArray(3, 'x'); // ['x', 'x', 'x']
+```
+
+
+> ChatGPT
+> 為什麼在泛型中常用 T 或 U 作為泛型型別參數，並沒有明確的典故或歷史背景。這些字母的使用主要是基於以下原因：
+> 1. 慣例與可讀性：在程式設計社群中，T 被廣泛接受作為泛型型別的慣例。它是 "Type" 的縮寫，代表型別。同樣地，U 可以被解釋為 "Unknown" 或 "Unspecified"，表示未知的型別。這些字母在程式碼中的使用是一種約定俗成，有助於提高程式碼的可讀性和一致性。
+> 2. 簡潔性與普遍性：T 和 U 是短小且易於輸入的字母，並且是通用的字母符號。它們的選擇不受特定語言或領域的限制，因此在不同的程式語言和環境中都可以使用。這種簡潔性和普遍性使得 T 和 U 成為泛型型別的常見表示方式。
+> 
+> 雖然沒有明確的典故與這些字母的使用相關，但它們已經成為程式設計社群中廣泛接受的慣例。它們的使用有助於促進程式碼的一致性，並讓開發者能夠快速理解泛型型別的意義和目的。
