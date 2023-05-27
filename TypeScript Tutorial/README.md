@@ -484,3 +484,42 @@ createArray(3, 'x'); // ['x', 'x', 'x']
 > 2. 簡潔性與普遍性：T 和 U 是短小且易於輸入的字母，並且是通用的字母符號。它們的選擇不受特定語言或領域的限制，因此在不同的程式語言和環境中都可以使用。這種簡潔性和普遍性使得 T 和 U 成為泛型型別的常見表示方式。
 > 
 > 雖然沒有明確的典故與這些字母的使用相關，但它們已經成為程式設計社群中廣泛接受的慣例。它們的使用有助於促進程式碼的一致性，並讓開發者能夠快速理解泛型型別的意義和目的。
+
+## Declaration Merging 宣告合併
+
+### 介面合併
+
+如果定義了兩個相同名稱的介面，則會自動合併成一個介面。但是要注意，重複的屬性的型別必須是相同的。
+
+```ts
+interface Alarm {
+    price: number;
+}
+interface Alarm {
+    price: string;  // 型別不一致，會報錯
+    weight: number;
+}
+
+// index.ts(5,3): error TS2403: Subsequent variable declarations must have the same type.  Variable 'price' must be of type 'number', but here has type 'string'.
+```
+
+如有重複的方法，則類似於函式重載，會自動合併為一個方法。
+
+```ts
+interface Alarm {
+    price: number;
+    alert(s: string): string;
+}
+interface Alarm {
+    weight: number;
+    alert(s: string, n: number): string;
+}
+
+// 相當於
+interface Alarm {
+    price: number;
+    weight: number;
+    alert(s: string): string;
+    alert(s: string, n: number): string;
+}
+```
