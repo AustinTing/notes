@@ -523,3 +523,7 @@ interface Alarm {
     alert(s: string, n: number): string;
 }
 ```
+
+# NEXT
+
+## Decorators 裝飾器

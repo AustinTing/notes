@@ -59,7 +59,7 @@ createArrayWithInterface = function<T>(length: number, value: T): Array<T> {
 // Generic parameter defaults
 // 使用泛型參數預設值
 function greet<T = string>(name: T): void {
-  // const paramLength = name.length; // 就算預設是 string，還是無法使用 string 的屬性。"類型 'T' 沒有屬性 'length'。"
+  // const paramLength = name.length; // 就算預設是 string，還是無法使用 string 的屬性。"類型 'T' 沒有屬性 'length'。
   console.log(`Hello, ${name}!`);
 }
 
@@ -68,4 +68,4 @@ greet("Alice");  // 輸出: Hello, Alice!
 greet<number>(42);  // 輸出: Hello, 42!
 
 // 未指定型別，使用預設值
-greet();  // 輸出: Hello, undefined!
+// greet();  // 輸出: Hello, undefined!
