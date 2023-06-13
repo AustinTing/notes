@@ -38,4 +38,7 @@
   - 可以做出像小狐狸錢包那樣的注視效果
 
 - [SadServers](https://sadservers.com/scenarios)
-   - 練習 LINUX 情境處理
+   - 練習 LINUX 情境處理。
+
+- [regex101]
+    - 可以學習和理解正則表達式的網站。
