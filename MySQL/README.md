@@ -193,3 +193,43 @@ CREATE TABLE IF NOT EXISTS employee(
   PRIMARY KEY (id)
 );
 ```
+
+# Handling Strings
+
+在 select 時，可以把欄位用某個 function 包起來，這樣就可以對欄位做處理。
+    
+```sql
+select some_fun(colum_name,..) as new column_name from table_name;
+```
+
+
+## Concat
+
+### Concatenate Strings
+
+```sql
+select CONCAT(first_name, " ", last_name) as full_name from employee;
+```
+
+### Concatenate Strings with Separator
+
+```sql
+select CONCAT_WS("-", first_name, last_name) as full_name from employee;
+```
+
+## Substring
+
+要注意起始是 1 ，不是 0 。
+
+```sql
+select SUBSTRING(first_name, 1, 4) from employee;
+```
+
+## Replace
+
+不支援 Regex。
+
+# Refining Selections
+
+
+
