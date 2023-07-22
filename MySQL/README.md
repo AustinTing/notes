@@ -36,6 +36,12 @@ Made by [Swapna Kumar Panda](https://twitter.com/swapnakpanda/status/16501186197
 delimiter $$
 ```
 
+查看目前用的 database
+
+```sql
+select database();
+```
+
 ## [Data Types](https://dev.mysql.com/doc/refman/8.0/en/data-types.html)
 
 ### [The ENUM Type](https://dev.mysql.com/doc/refman/8.0/en/enum.html)
@@ -521,6 +527,171 @@ SET time_zone = 'Asia/Taipei';
 > time_zone：這個設定代表 MySQL 連線的客戶端時區。它會影響 MySQL 伺服器將日期和時間轉換為連線客戶端所在時區的方式。當 MySQL 伺服器接收到來自客戶端的日期和時間值時，它會根據這個時區設定進行適當的轉換。
 >
 > 總結而言，system_time_zone 用於指定 MySQL 伺服器內部的系統時區，而 time_zone 用於指定連線的客戶端時區。這兩個設定都影響 MySQL 在處理日期和時間時的行為，包括儲存、顯示和轉換日期和時間值。
+
+# String Type
+
+## char and varchar
+
+### char 
+
+固定長度 string (0~255)。
+
+存 `"    "` 就會是 `"    "` 。
+
+### varchar
+
+可變長度 string (0~65535)。更新時因為會需要調整空間，所以會比 char 慢。
+
+存 `"    "` 會變 `""` 。
+
+### 查看長度
+
+查看幾個字符
+    
+```sql
+select char_length(a), char_length(b) from 92_char_varchar;
+```
+
+查看幾個 bytes
+
+```sql
+select length(a), length(b) from 92_char_varchar;
+```
+
+## BINARY String Type
+
+### BINARY
+
+會自動在結尾補 0x00 到指定長度。
+
+### VARBINARY
+
+不會自動在結尾補 0x00 到指定長度。
+
+## BLOB and TEXT
+
+### BLOB
+
+BLOB 是用於存儲二進位數據（例如圖片、影音、文件等）的資料類型。
+
+BLOB 存儲的數據以二進位形式存儲，不進行任何字符編碼轉換。
+
+BLOB 在資料庫中佔用的空間與實際數據大小相同。
+
+### TEXT
+
+TEXT 是用於存儲文本數據的資料類型，例如長文本、文章內容等。
+
+因為資料長度通常很長，所以可以用 `set max_sort_length = 1000` 來設定排序時只看前 1000 個字元。
+
+## ENUM
+
+一個 primitive value 的 list 。
+
+創建時指定 list 的值，插入時只能插入 list 裡面的值。
+
+```sql
+create table 95_enum(n varchar(5), size enum('xs','s','m','l','xl'));
+```
+
+插入時可以直接使用 Index 。
+
+```sql
+mysql> insert into 95_enum values(1, 1);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from 95_enum;
++------+------+
+| n    | size |
++------+------+
+| 1    | xs   |
++------+------+
+1 row in set (0.00 sec)
+```
+
+Insert 或 select 時，會比直接 string 類的 type 快。
+
+## SET
+
+可以紀錄一組組合。最大可以有 64 個不同 member。
+
+```sql
+create table 96_set(id varchar(2), order_set set('xs','s','m','l','xl'));
+```
+
+Insert 時要注意，逗號之間不能有空白。
+```sql
+mysql> insert into 96_set (id, order_set) values (1, 's, l');
+ERROR 1265 (01000): Data truncated for column 'order_set' at row 1
+mysql> insert into 96_set (id, order_set) values (1, 's,l');
+Query OK, 1 row affected (0.01 sec)
+```
+
+如果要用 set 的 index 來新增，因為有多種組合，所以要注意。Index 是依照二進位來表示，
+
+```sql
+mysql> create table 96_set(id varchar(2), order_set set('s','m','l'));
+Query OK, 0 rows affected (0.03 sec)
+mysql> insert into 96_set (id, order_set) values (1, 1);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into 96_set (id, order_set) values (2, 2);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into 96_set (id, order_set) values (3, 3);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into 96_set (id, order_set) values (4, 4);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into 96_set (id, order_set) values (5, 5);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into 96_set (id, order_set) values (6, 6);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into 96_set (id, order_set) values (7, 7);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into 96_set (id, order_set) values (8, 8);
+ERROR 1265 (01000): Data truncated for column 'order_set' at row 1
+```
+
+SET 的 index 是用二進位來表示組合內容，
+
+```sql
+mysql> select * from 96_set;
++------+-----------+
+| id   | order_set |
++------+-----------+
+| 0    |           |
+| 1    | s         |
+| 2    | m         |
+| 3    | s,m       |
+| 4    | l         |
+| 5    | s,l       |
+| 6    | m,l       |
+| 7    | s,m,l     |
++------+-----------+
+8 rows in set (0.01 sec)
+```
+
+| index | l   | m   | s   | present set    |
+| ----- | --- | --- | --- | --- |
+| 0     | 0   | 0   | 0   |     |
+| 1     | 0   | 0   | 1   | s   |
+| 2     | 0   | 1   | 0   | m   |
+| 3     | 0   | 1   | 1   | m,s |
+| 4     | 1   | 0   | 0   | l   |
+| 5     | 1   | 0   | 1   | l,s |
+| 6     | 1   | 1   | 0   | l,m |
+| 7     | 1   | 1   | 1   | l,m,s |
+
+
+
+
+
+
 
 
 
