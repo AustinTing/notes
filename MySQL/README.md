@@ -844,6 +844,20 @@ mysql> select DATEDIFF('2022-02-22', '2023-07-22');
 1 row in set (0.01 sec)
 ```
 
+### NOW() and SYSDATE()
+
+```sql
+mysql> select SYSDATE(), SLEEP(2), SYSDATE(), SLEEP(2), NOW(), SLEEP(2), NOW();
++---------------------+----------+---------------------+----------+---------------------+----------+---------------------+
+| SYSDATE()           | SLEEP(2) | SYSDATE()           | SLEEP(2) | NOW()               | SLEEP(2) | NOW()               |
++---------------------+----------+---------------------+----------+---------------------+----------+---------------------+
+| 2023-07-22 13:42:47 |        0 | 2023-07-22 13:42:49 |        0 | 2023-07-22 13:42:47 |        0 | 2023-07-22 13:42:47 |
++---------------------+----------+---------------------+----------+---------------------+----------+---------------------+
+1 row in set (6.01 sec)
+```
+
+
+
 ## Information Functions
 
 ### LAST_INSERT_ID
@@ -1042,6 +1056,10 @@ mysql> SELECT * FROM customers INNER JOIN orders WHERE customers.id=orders.custo
 > 右表（Right Table）： 右表是指出現在 JOIN 關鍵字之後的資料表。在 JOIN 操作中，右表的記錄將根據與左表的匹配條件進行結合。
 
 
+WHERE 會對 WHERE 之前的那張表篩選。所以當 JOIN...WHERE 時，之前那張表就是，兩張表 JOIN 完的大表。WHERE 再針對這張大表篩選。
+
+ON 不會產生大表，但要再確認 LEFT JOIN 和 RIGHT JOIN 的產生方式？ 
+
 ## LEFT JOIN
 
 取 JOIN 後，根據條件取左邊表格的所有資料及右邊表格符合條件的資料。
@@ -1085,5 +1103,37 @@ CREATE TABLE orders(
         REFERENCES customers(id)
         ON DELETE CASCADE
 );
+```
+
+> ChatGPT
+> 除了 CASCADE 之外，還有其他一些選項可以加在 ON DELETE 後面的外鍵約束中。這些選項會定義在主表（參照表）中的記錄被刪除時，從表（被參照表）中的外鍵列的行為。以下是其他幾個可用的選項：
+>
+> RESTRICT： 禁止刪除主表中有相關聯的記錄。如果嘗試刪除主表中的記錄並且有相關的從表記錄存在，則拋出錯誤，並且不允許刪除主表記錄。
+>
+> NO ACTION： 與 RESTRICT 類似，禁止刪除主表中有相關聯的記錄。如果嘗試刪除主表中的記錄並且有相關的從表記錄存在，則拋出錯誤，並且不允許刪除主表記錄。NO ACTION 是 MySQL 預設的 ON DELETE 行為。
+>
+> SET NULL： 在主表中刪除記錄時，將從表中的外鍵列設置為 NULL。這要求從表的外鍵列允許為 NULL。
+>
+> SET DEFAULT： 在主表中刪除記錄時，將從表中的外鍵列設置為預設值。這要求從表的外鍵列有指定的預設值。
+>ㄕ
+> 這些選項允許你根據你的需求來定義主表記錄被刪除時的外鍵列行為。每個選項都有不同的效果，並且需要根據具體的使用情境來選擇適合的選項。透過適當的外鍵約束，可以確保資料庫中的數據完整性和一致性。
+
+
+# Relationship (Many-to-Many)
+
+多對多關係是指一個 table 的一筆資料，可以對應到另一個 table 的多筆資料，而且另一個 table 的一筆資料，也可以對應到這個 table 的多筆資料。
+
+範例：現在有三張表，一張是 `books`， 一張是 `reviews`， 一張是 `reviewers`。
+
+查看每本書的平均評價。
+
+```sql
+SELECT
+    title, ROUND(AVG(rating), 2) as avg_rating
+from books
+inner join reviews
+on books.id=reviews.book_id
+group by books.id
+order by avg_rating desc;
 ```
 
