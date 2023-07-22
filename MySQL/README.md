@@ -689,6 +689,116 @@ mysql> select * from 96_set;
 
 
 
+# Logical Operators
+
+## EQUAL and NOT EQUAL
+
+## LIKE and NOT LIKE
+
+要注意字串比對都是 case insensitive 的。
+
+```sql
+mysql> select * from 99_employee where first_name like '%E%';
++----+------------+-----------+--------------------+--------+------------+-------+
+| id | first_name | last_name | title              | salary | hire_date  | notes |
++----+------------+-----------+--------------------+--------+------------+-------+
+|  5 | Eliza      | Clifford  | Software Engineer  |   4750 | 1998-10-19 | NULL  |
+|  7 | Melinda    | Clifford  | Project Manager    |   8500 | 2013-10-29 | NULL  |
+|  9 | Harley     | Gilbert   | Software Architect |   8000 | 2000-07-17 | NULL  |
++----+------------+-----------+--------------------+--------+------------+-------+
+3 rows in set (0.00 sec)
+```
+
+如果要區分大小寫，查詢時可以加 `BINARY` 。或是直接在 table 設定。
+
+```sql
+mysql> select * from 99_employee where first_name like binary '%E%';
++----+------------+-----------+-------------------+--------+------------+-------+
+| id | first_name | last_name | title             | salary | hire_date  | notes |
++----+------------+-----------+-------------------+--------+------------+-------+
+|  5 | Eliza      | Clifford  | Software Engineer |   4750 | 1998-10-19 | NULL  |
++----+------------+-----------+-------------------+--------+------------+-------+
+1 row in set, 1 warning (0.01 sec)
+```
+
+## Greater Than and Less Than
+
+## AND and OR
+
+## BETWEEN
+
+包含起點和終點。
+
+```sql
+mysql> select * from 99_employee where salary between 6000 and 8000;
++----+------------+-----------+------------------------+--------+------------+-------+
+| id | first_name | last_name | title                  | salary | hire_date  | notes |
++----+------------+-----------+------------------------+--------+------------+-------+
+|  2 | Taylor     | Edward    | Software Architect     |   7200 | 2002-09-21 | NULL  |
+|  3 | Vivian     | Dickens   | Database Administrator |   6000 | 2012-08-29 | NULL  |
+|  4 | Harry      | Clifford  | Database Administrator |   6800 | 2015-12-10 | NULL  |
+|  8 | Jack       | Chan      | Test Engineer          |   6500 | 2018-09-07 | NULL  |
+|  9 | Harley     | Gilbert   | Software Architect     |   8000 | 2000-07-17 | NULL  |
++----+------------+-----------+------------------------+--------+------------+-------+
+5 rows in set (0.00 sec)
+```
+
+## IN and NOT IN
+
+查詢資料在不在某個 list 裡面。
+
+
+```sql
+mysql> select * from 99_employee where salary in (5000, 6000, 7000, 8000);
++----+------------+-----------+------------------------+--------+------------+-------+
+| id | first_name | last_name | title                  | salary | hire_date  | notes |
++----+------------+-----------+------------------------+--------+------------+-------+
+|  3 | Vivian     | Dickens   | Database Administrator |   6000 | 2012-08-29 | NULL  |
+|  9 | Harley     | Gilbert   | Software Architect     |   8000 | 2000-07-17 | NULL  |
++----+------------+-----------+------------------------+--------+------------+-------+
+2 rows in set (0.00 sec)
+```
+
+## CASE Statement
+
+條件判斷。可以將生成新欄位的值依照條件來決定。
+
+```sql
+SELECT *,
+     case 
+         when salary>=7000 then "high"
+         else 'low'
+     end as tag
+ from 99_employee order by salary desc;
+
++----+------------+-----------+------------------------+--------+------------+-------+------+
+| id | first_name | last_name | title                  | salary | hire_date  | notes | tag  |
++----+------------+-----------+------------------------+--------+------------+-------+------+
+| 16 | Melinda    | Clifford  | Project Manager        |   8500 | 2013-10-29 | NULL  | high |
+|  7 | Melinda    | Clifford  | Project Manager        |   8500 | 2013-10-29 | NULL  | high |
+| 18 | Harley     | Gilbert   | Software Architect     |   8000 | 2000-07-17 | NULL  | high |
+|  9 | Harley     | Gilbert   | Software Architect     |   8000 | 2000-07-17 | NULL  | high |
+|  2 | Taylor     | Edward    | Software Architect     |   7200 | 2002-09-21 | NULL  | high |
+| 11 | Taylor     | Edward    | Software Architect     |   7200 | 2002-09-21 | NULL  | high |
+|  4 | Harry      | Clifford  | Database Administrator |   6800 | 2015-12-10 | NULL  | low  |
+| 13 | Harry      | Clifford  | Database Administrator |   6800 | 2015-12-10 | NULL  | low  |
+|  8 | Jack       | Chan      | Test Engineer          |   6500 | 2018-09-07 | NULL  | low  |
+| 17 | Jack       | Chan      | Test Engineer          |   6500 | 2018-09-07 | NULL  | low  |
+| 12 | Vivian     | Dickens   | Database Administrator |   6000 | 2012-08-29 | NULL  | low  |
+|  3 | Vivian     | Dickens   | Database Administrator |   6000 | 2012-08-29 | NULL  | low  |
+| 10 | Robin      | Jackman   | Software Engineer      |   5500 | 2001-10-12 | NULL  | low  |
+|  1 | Robin      | Jackman   | Software Engineer      |   5500 | 2001-10-12 | NULL  | low  |
+|  6 | Nancy      | Newman    | Software Engineer      |   5100 | 2007-01-23 | NULL  | low  |
+| 15 | Nancy      | Newman    | Software Engineer      |   5100 | 2007-01-23 | NULL  | low  |
+|  5 | Eliza      | Clifford  | Software Engineer      |   4750 | 1998-10-19 | NULL  | low  |
+| 14 | Eliza      | Clifford  | Software Engineer      |   4750 | 1998-10-19 | NULL  | low  |
++----+------------+-----------+------------------------+--------+------------+-------+------+
+18 rows in set (0.00 sec)
+```
+
+
+
+
 
 
 
