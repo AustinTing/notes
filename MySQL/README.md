@@ -796,14 +796,121 @@ SELECT *,
 18 rows in set (0.00 sec)
 ```
 
+# Functions
 
+## String Functions
 
+## Numeric Functions
 
+### 除法
 
+```sql
+mysql> select 4/3, 4 div 3, 4 mod 3;
++--------+---------+---------+
+| 4/3    | 4 div 3 | 4 mod 3 |
++--------+---------+---------+
+| 1.3333 |       1 |       1 |
++--------+---------+---------+
+1 row in set (0.00 sec)
 
+```
 
+## Date and Time Functions
 
+### DATE_ADD
 
+計算多久前/後的時間是多少。
+
+```sql
+mysql> select DATE_ADD(NOW(), INTERVAL 10 DAY), DATE_ADD(NOW(), INTERVAL 10 WEEK);
++----------------------------------+-----------------------------------+
+| DATE_ADD(NOW(), INTERVAL 10 DAY) | DATE_ADD(NOW(), INTERVAL 10 WEEK) |
++----------------------------------+-----------------------------------+
+| 2023-08-01 10:20:20              | 2023-09-30 10:20:20               |
++----------------------------------+-----------------------------------+
+1 row in set (0.01 sec)
+```
+### DATE_DIFF
+
+計算相差幾天
+
+```sql
+mysql> select DATEDIFF('2022-02-22', '2023-07-22');
++--------------------------------------+
+| DATEDIFF('2022-02-22', '2023-07-22') |
++--------------------------------------+
+|                                 -515 |
++--------------------------------------+
+1 row in set (0.01 sec)
+```
+
+## Information Functions
+
+### LAST_INSERT_ID
+
+可以取得最後一次 insert 的 id 。 但要注意，如果是一次多筆資料在一個 query，就會回傳第一筆資料的 id 。
+
+```sql
+mysql> insert into 99_employee (first_name, last_name, hire_date)
+    -> values
+    -> ('a', 'a', NOW()), 
+    -> ('b', 'b', NOW()), 
+    -> ('c', 'c', NOW());
+Query OK, 3 rows affected, 3 warnings (0.02 sec)
+Records: 3  Duplicates: 0  Warnings: 3
+
+mysql> select * from 99_employee;
++----+------------+-----------+------------------------+--------+------------+-------+
+| id | first_name | last_name | title                  | salary | hire_date  | notes |
++----+------------+-----------+------------------------+--------+------------+-------+
+|  1 | Robin      | Jackman   | Software Engineer      |   5500 | 2001-10-12 | NULL  |
+|  2 | Taylor     | Edward    | Software Architect     |   7200 | 2002-09-21 | NULL  |
+|  3 | Vivian     | Dickens   | Database Administrator |   6000 | 2012-08-29 | NULL  |
+|  4 | Harry      | Clifford  | Database Administrator |   6800 | 2015-12-10 | NULL  |
+|  5 | Eliza      | Clifford  | Software Engineer      |   4750 | 1998-10-19 | NULL  |
+|  6 | Nancy      | Newman    | Software Engineer      |   5100 | 2007-01-23 | NULL  |
+|  7 | Melinda    | Clifford  | Project Manager        |   8500 | 2013-10-29 | NULL  |
+|  8 | Jack       | Chan      | Test Engineer          |   6500 | 2018-09-07 | NULL  |
+|  9 | Harley     | Gilbert   | Software Architect     |   8000 | 2000-07-17 | NULL  |
+| 10 | Robin      | Jackman   | Software Engineer      |   5500 | 2001-10-12 | NULL  |
+| 11 | Taylor     | Edward    | Software Architect     |   7200 | 2002-09-21 | NULL  |
+| 12 | Vivian     | Dickens   | Database Administrator |   6000 | 2012-08-29 | NULL  |
+| 13 | Harry      | Clifford  | Database Administrator |   6800 | 2015-12-10 | NULL  |
+| 14 | Eliza      | Clifford  | Software Engineer      |   4750 | 1998-10-19 | NULL  |
+| 15 | Nancy      | Newman    | Software Engineer      |   5100 | 2007-01-23 | NULL  |
+| 16 | Melinda    | Clifford  | Project Manager        |   8500 | 2013-10-29 | NULL  |
+| 17 | Jack       | Chan      | Test Engineer          |   6500 | 2018-09-07 | NULL  |
+| 18 | Harley     | Gilbert   | Software Architect     |   8000 | 2000-07-17 | NULL  |
+| 19 | a          | a         | NULL                   |   NULL | 2023-07-22 | NULL  |
+| 20 | b          | b         | NULL                   |   NULL | 2023-07-22 | NULL  |
+| 21 | c          | c         | NULL                   |   NULL | 2023-07-22 | NULL  |
++----+------------+-----------+------------------------+--------+------------+-------+
+21 rows in set (0.00 sec)
+
+mysql> SELECT LAST_INSERT_ID();
++------------------+
+| LAST_INSERT_ID() |
++------------------+
+|               19 |
++------------------+
+1 row in set (0.00 sec)
+```
+
+## Aggregate Functions
+
+## Encryption Functions
+
+### MD5
+
+```sql
+mysql> select MD5('password');
++----------------------------------+
+| MD5('password')                  |
++----------------------------------+
+| 5f4dcc3b5aa765d61d8327deb882cf99 |
++----------------------------------+
+1 row in set (0.00 sec)
+```
 
 
 
