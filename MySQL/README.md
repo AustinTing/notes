@@ -912,11 +912,178 @@ mysql> select MD5('password');
 1 row in set (0.00 sec)
 ```
 
+# Relationship (One-to-Many)
+
+## Foreign Key
+
+外鍵是用來連結兩個 table 的欄位。
+
+假設有兩個 table，一個是 `customers` ，一個是 `orders`。
+
+在 orders 設定外鍵，可以讓 orders 的 `customer_id` 欄位，只能填入 customers 的 `id` 欄位的值。`FOREIGN KEY(customer_id) REFERENCES customers(id)`
+
+```sql
+CREATE TABLE orders(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_date DATE,
+    amount DECIMAL(8,2),
+    customer_id INT,
+    FOREIGN KEY(customer_id) REFERENCES customers(id)
+);
+```
+
+如果 orders 不小心 insert 了一個不存在的 customer_id ，就會出錯。
+
+```sql
+mysql> select * from customers;
++----+------------+-----------+----------------+
+| id | first_name | last_name | email          |
++----+------------+-----------+----------------+
+|  1 | Robin      | Jackman   | roj@gmail.com  |
+|  2 | Taylor     | Edward    | taed@gmail.com |
+|  3 | Vivian     | Dickens   | vidi@gmail.com |
+|  4 | Harley     | Gilbert   | hgi@gmail.com  |
++----+------------+-----------+----------------+
+4 rows in set (0.01 sec)
+
+mysql> insert into orders(order_date, amount, customer_id) values(NOW(), 99.99, 5);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`udemy`.`orders`, CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`))
+```
+
+## One-to-Many
+
+一個 table 的一筆資料，可以對應到另一個 table 的多筆資料。
+
+## JOIN
+
+JOIN 是用來連結兩個 table。
+
+如果現在有兩張表，一張是 `customers` ，一張是 `orders`。
+
+```sql
+mysql> select * from customers;
++----+------------+-----------+----------------+
+| id | first_name | last_name | email          |
++----+------------+-----------+----------------+
+|  1 | Robin      | Jackman   | roj@gmail.com  |
+|  2 | Taylor     | Edward    | taed@gmail.com |
+|  3 | Vivian     | Dickens   | vidi@gmail.com |
+|  4 | Harley     | Gilbert   | hgi@gmail.com  |
++----+------------+-----------+----------------+
+4 rows in set (0.01 sec)
+
+mysql> select * from orders;
++----+------------+--------+-------------+
+| id | order_date | amount | customer_id |
++----+------------+--------+-------------+
+|  1 | 2001-10-12 |  99.12 |           1 |
+|  2 | 2001-09-21 | 110.99 |           2 |
+|  3 | 2001-10-13 |  12.19 |           1 |
+|  4 | 2001-11-29 |  88.09 |           3 |
+|  5 | 2001-11-11 | 205.01 |           4 |
++----+------------+--------+-------------+
+5 rows in set (0.00 sec)
+```
+
+兩張表做 JOIN 時，會將彼此資料一筆一筆相乘。
+
+```sql
+mysql> SELECT * FROM customers JOIN orders;
++----+------------+-----------+----------------+----+------------+--------+-------------+
+| id | first_name | last_name | email          | id | order_date | amount | customer_id |
++----+------------+-----------+----------------+----+------------+--------+-------------+
+|  4 | Harley     | Gilbert   | hgi@gmail.com  |  1 | 2001-10-12 |  99.12 |           1 |
+|  3 | Vivian     | Dickens   | vidi@gmail.com |  1 | 2001-10-12 |  99.12 |           1 |
+|  2 | Taylor     | Edward    | taed@gmail.com |  1 | 2001-10-12 |  99.12 |           1 |
+|  1 | Robin      | Jackman   | roj@gmail.com  |  1 | 2001-10-12 |  99.12 |           1 |
+|  4 | Harley     | Gilbert   | hgi@gmail.com  |  2 | 2001-09-21 | 110.99 |           2 |
+|  3 | Vivian     | Dickens   | vidi@gmail.com |  2 | 2001-09-21 | 110.99 |           2 |
+|  2 | Taylor     | Edward    | taed@gmail.com |  2 | 2001-09-21 | 110.99 |           2 |
+|  1 | Robin      | Jackman   | roj@gmail.com  |  2 | 2001-09-21 | 110.99 |           2 |
+|  4 | Harley     | Gilbert   | hgi@gmail.com  |  3 | 2001-10-13 |  12.19 |           1 |
+|  3 | Vivian     | Dickens   | vidi@gmail.com |  3 | 2001-10-13 |  12.19 |           1 |
+|  2 | Taylor     | Edward    | taed@gmail.com |  3 | 2001-10-13 |  12.19 |           1 |
+|  1 | Robin      | Jackman   | roj@gmail.com  |  3 | 2001-10-13 |  12.19 |           1 |
+|  4 | Harley     | Gilbert   | hgi@gmail.com  |  4 | 2001-11-29 |  88.09 |           3 |
+|  3 | Vivian     | Dickens   | vidi@gmail.com |  4 | 2001-11-29 |  88.09 |           3 |
+|  2 | Taylor     | Edward    | taed@gmail.com |  4 | 2001-11-29 |  88.09 |           3 |
+|  1 | Robin      | Jackman   | roj@gmail.com  |  4 | 2001-11-29 |  88.09 |           3 |
+|  4 | Harley     | Gilbert   | hgi@gmail.com  |  5 | 2001-11-11 | 205.01 |           4 |
+|  3 | Vivian     | Dickens   | vidi@gmail.com |  5 | 2001-11-11 | 205.01 |           4 |
+|  2 | Taylor     | Edward    | taed@gmail.com |  5 | 2001-11-11 | 205.01 |           4 |
+|  1 | Robin      | Jackman   | roj@gmail.com  |  5 | 2001-11-11 | 205.01 |           4 |
++----+------------+-----------+----------------+----+------------+--------+-------------+
+20 rows in set (0.01 sec)
+```
+
+## INNER JOIN
+
+取 JOIN 後，根據條件取兩張表的交集。
+
+```sql
+mysql> SELECT * FROM customers INNER JOIN orders WHERE customers.id=orders.customer_id;
++----+------------+-----------+----------------+----+------------+--------+-------------+
+| id | first_name | last_name | email          | id | order_date | amount | customer_id |
++----+------------+-----------+----------------+----+------------+--------+-------------+
+|  1 | Robin      | Jackman   | roj@gmail.com  |  1 | 2001-10-12 |  99.12 |           1 |
+|  1 | Robin      | Jackman   | roj@gmail.com  |  3 | 2001-10-13 |  12.19 |           1 |
+|  2 | Taylor     | Edward    | taed@gmail.com |  2 | 2001-09-21 | 110.99 |           2 |
+|  3 | Vivian     | Dickens   | vidi@gmail.com |  4 | 2001-11-29 |  88.09 |           3 |
+|  4 | Harley     | Gilbert   | hgi@gmail.com  |  5 | 2001-11-11 | 205.01 |           4 |
++----+------------+-----------+----------------+----+------------+--------+-------------+
+5 rows in set (0.01 sec)
+```
+
+> ChatGPT:
+> 在 JOIN 操作中，我們通常會使用以下兩個術語來表示參與 JOIN 的資料表：
+>
+> 左表（Left Table）： 左表是指出現在 JOIN 關鍵字之前的資料表。在 JOIN 操作中，左表的記錄將保留，而右表中匹配的記錄將與左表中的記錄進行結合。
+>
+> 右表（Right Table）： 右表是指出現在 JOIN 關鍵字之後的資料表。在 JOIN 操作中，右表的記錄將根據與左表的匹配條件進行結合。
 
 
+## LEFT JOIN
 
+取 JOIN 後，根據條件取左邊表格的所有資料及右邊表格符合條件的資料。
 
+假設有一個 customer 沒買東西，就不會出現在 INNER JOIN 的結果裡面，因為 orders 裡面沒有其 id。但是在 LEFT JOIN 的結果裡面，就會出現。
 
+```sql
+mysql> SELECT * FROM customers LEFT JOIN orders ON customers.id=orders.customer_id;
++----+------------+-----------+-----------------+------+------------+--------+-------------+
+| id | first_name | last_name | email           | id   | order_date | amount | customer_id |
++----+------------+-----------+-----------------+------+------------+--------+-------------+
+|  1 | Robin      | Jackman   | roj@gmail.com   |    1 | 2001-10-12 |  99.12 |           1 |
+|  1 | Robin      | Jackman   | roj@gmail.com   |    3 | 2001-10-13 |  12.19 |           1 |
+|  2 | Taylor     | Edward    | taed@gmail.com  |    2 | 2001-09-21 | 110.99 |           2 |
+|  3 | Vivian     | Dickens   | vidi@gmail.com  |    4 | 2001-11-29 |  88.09 |           3 |
+|  4 | Harley     | Gilbert   | hgi@gmail.com   |    5 | 2001-11-11 | 205.01 |           4 |
+|  5 | No         | Buy       | nobuy@gmail.com | NULL | NULL       |   NULL |        NULL |
++----+------------+-----------+-----------------+------+------------+--------+-------------+
+6 rows in set (0.00 sec)
+```
 
+## RIGHT JOIN
 
+因為如果是 LEFT JOIN 的話，就會把 orders 的資料都取出來，但是 orders 有設定外鍵，所以 orders 的 customer_id 一定會在 customers 的 id 裡面。所以 RIGHT JOIN 的結果會跟 INNER JOIN 一樣。
+
+## ON DELETE
+
+如果 orders 的 customer_id 是 customers 的 id ，那麼當 customers 的 id 被刪除時，有 customer_id 的 orders 也應要被刪除。
+
+如果沒加 ON DELETE，想要刪除 cutomers ，就要注意是否有其他 table 有用到 customers 的 id ，如果有的話，就會出錯。要先把有用 Foreign Key 設定這個 cuomter id 的 table 的資料刪除，才能刪除 customer 。
+
+如果加 ON DELETE，就可以直接刪除 customer ，有用到這個 customer id 的 table 的資料也會被刪除。
+
+```sql
+CREATE TABLE orders(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_date DATE,
+    amount DECIMAL(8,2),
+    customer_id INT,
+    FOREIGN KEY(customer_id)
+        REFERENCES customers(id)
+        ON DELETE CASCADE
+);
+```
 
