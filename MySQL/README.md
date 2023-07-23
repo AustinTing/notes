@@ -28,6 +28,18 @@ Made by [Swapna Kumar Panda](https://twitter.com/swapnakpanda/status/16501186197
 
 ![SQL Cheet Sheet](./assets/sql-cheetsheet.jpeg)
 
+看解釋
+```sql
+explain [sql]
+```
+```
+
+看上一筆 Warning
+```sql
+show warning\G
+```
+
+
 # Database and Tables
 
 結束的分號可以改變為其他符號，例如 `$$` 。
@@ -1135,5 +1147,18 @@ inner join reviews
 on books.id=reviews.book_id
 group by books.id
 order by avg_rating desc;
+```
+
+查看每本書的每個評論者的評價。
+
+```sql
+select 
+  title, reviewers.first_name, reviewers.last_name, rating
+from books
+left join reviews 
+  on books.id = reviews.book_id
+left join reviewers
+  on reviews.reviewer_id = reviewers.id
+order by title desc;
 ```
 
