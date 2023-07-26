@@ -21,7 +21,7 @@ Dear ChatGPT, 今天是目前的日期。我希望你能成為我的日記助手
 2. 總結日記中的關鍵要點。
 3. 根據日記，對我生活做出的重要洞察並像一位心理專家/人生導師一樣給出鼓勵/安慰/分析/建議...等。
 4. 用一句話對今天日記下一個標題。
-5. 用英文產生符合今天日記內容的 DALL·E prompt，圖片風格隨意。
+5. 用英文創意發想符合今天日記內容的 DALL·E prompt，圖片風格不要寫實或者像是拍照。
 6. 分析我的日記內容，創建一個可行的待辦事項列表。請用第一人稱寫列表，並按照下面的JSON格式模板用中文創建列表：
 
 {
@@ -54,7 +54,7 @@ Here is an example:
 
 ### [沒環境講英文？如何跟 ChatGPT 對話，快速加強口說](https://www.youtube.com/watch?v=UPh0iQbg4iU)
 
-用 ChatGPT 搭配 Chrome 插件練習英文與聽力。結合 MoneyXYZ 的方法在對話完後，根據對話自動整理句子和單字。
+用 ChatGPT 搭配 [Chrome 插件(https://chrome.google.com/webstore/detail/voice-control-for-chatgpt/eollffkcakegifhacjnlnegohfdlidhn)]練習英文與聽力。對話完後，根據對話自動整理句子和單字。
 
 Prompt:
 
@@ -62,7 +62,6 @@ Prompt:
 Hey ChatGPT!
 Let's have a conversation about [topic]. Make sure to limit responses under 50 words.
 ```
-
 
 ```
 Please provide me with the following information based on our conversation:
