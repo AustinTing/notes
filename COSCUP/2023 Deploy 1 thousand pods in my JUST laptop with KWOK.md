@@ -1,5 +1,7 @@
 # Deploy 1 thousand pods in my JUST laptop (w/ kwok)
 
+Speaker: Hoon Jo
+
 ## Why use kwok to deploy kubernetes
 
 > KWOK is a toolkit that enables setting up a cluster of thousands of Nodes in seconds. Under the scene, all Nodes are simulated to behave like real ones, so the overall approach employs a pretty low resource footprint that you can easily play around on your laptop.
