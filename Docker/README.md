@@ -21,3 +21,14 @@ Container 的標準化是由 Open Container Initiative (OCI) 負責。主要有�
 - Image Specification
     - 不同 Container 的實作（Docker, Podman）的 Image 可以互相使用。
 
+# Container Quick Start
+
+## Basic Command
+
+`docker version`: 查看 Docker 版本。
+
+`docker info`: 查看目前 Docker 的狀態資訊。
+
+`docker container ps -a`: 查看目前所有的 Container。
+
+`docker images ls`: 查看目前所有的 Image。
