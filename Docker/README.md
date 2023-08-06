@@ -39,7 +39,7 @@ Container 不是迷你的 VM，而是一個一個獨立的 process。這些 proc
 
 `docker container ps -a`: 查看目前所有的 Container。
 
-`docker images ls`: 查看目前所有的 Image。
+`docker image ls`: 查看目前所有的 Image。
 
 ## Image and Container
 
@@ -48,6 +48,13 @@ Image 是一份 `read-only` 的文件，包含了運行應用程式所需的所�
 Container 是 Image 的執行實例，且在多層 image 之上有 `read-write` 的權限。
 
 ## `docker container` 相關指令
+
+執行 `docker container run...` 後，Docker 會做以下事情：
+
+1. 檢查本地是否有指定的 Image，如果沒有，則從 Docker Hub 下載。
+2. 使用 Image 建立一個 Container，並執行。
+
+
 
 `docker container run [Image Name]`: 建立一個 Container。
 
@@ -63,10 +70,6 @@ Container 是 Image 的執行實例，且在多層 image 之上有 `read-write` 
 
 
 ## Attach and Detach Container
-
-
-
-
 
 Attach 是指連接到 Container 的標準輸入、輸出和錯誤輸出的模式。
 
