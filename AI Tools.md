@@ -66,10 +66,36 @@ Let's have a conversation about [topic]. Make sure to limit responses under 50 w
 ```
 Please provide me with the following information based on our conversation:
 1. Give me a collocation or phrase based on something you've said.
-2. Give me a sentence pattern based. on something you've said.
+2. Give me a sentence pattern based on something you've said.
 3. Give me a better way to say the sentence based on what I've said.
 ```
+```
+During this conversation, I will input a word each time, please introduce the usage of this word in the following format.
 
+[Word]
+/[Stress]/
+[Part of Speech]. [Definition]
+([Synonyms])
+
+[Collocations by list]
+
+[Example Sentence]
+
+For example:
+
+Suggest
+/səˈdʒɛst/
+Verb. To suggest something is to mention it as a possible thing to be done, used, thought about, etc.
+(Propose, recommend)
+
+- suggest an idea
+- suggest a plan
+- suggest an improvement
+- strongly suggest
+- may suggest.
+
+Can I suggest a different approach to this problem?
+```
 
 ## [Copilot](https://www.youtube.com/watch?v=Fi3AJZZregI)
 
