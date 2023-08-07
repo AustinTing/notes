@@ -1,11 +1,7 @@
 # Docker
 
-- [Orbstack](https://orbstack.dev/)
-    - Mac 上 Docker Desktop 的替代品。
-
-# [Docker容器技術從入門到精通](https://www.udemy.com/course/docker-china/)
-
-[課程 Document](https://www.docker.tips)
+主要參考 [Docker容器技術從入門到精通](https://www.udemy.com/course/docker-china/)
+及 [其課程 Document](https://www.docker.tips)
 
 # 容器技術的介紹與安裝
 
@@ -23,7 +19,11 @@ Container 的標準化是由 Open Container Initiative (OCI) 負責。主要有�
 
 ### 與 VM 的比較
 
-![](https://images.contentstack.io/v3/assets/blt300387d93dabf50e/bltb6200bc085503718/5e1f209a63d1b6503160c6d5/containers-vs-virtual-machines.jpg)
+![](./assets/containers-vs-virtual-machines.jpg)
+
+<center>圖片來源：<a href=https://www.weave.works/blog/a-practical-guide-to-choosing-between-docker-containers-and-vms>Docker vs Virtual Machines (VMs) : A Practical Guide to Docker Containers and VMs</a></center>
+
+
 
 VM 虛擬化完整 OS，運行在 Hypervisor 上。而 Container 不需要虛擬化完整 OS，運行在 container engine 上，container engine 運行在 Host OS 上。
 
@@ -102,10 +102,18 @@ Detach 是指將本地的標準輸入、輸出和錯誤輸出從容器中分離�
 
 `docker container top [Container ID]`: 查看 Container 中正在運行的 process。
 
+# Docker Image
+
+![Docker Lifecycle](./assets/docker-lifecycle.jpeg)
+<center>圖片來源：<a href=https://www.slideshare.net/TrisM/docker-41045742>Introduction to Docker - What is it and how is it compared to VM's</a></center>
 
 
 
 
+# Other Tools
+
+- [Orbstack](https://orbstack.dev/)
+    - Mac 上 Docker Desktop 的替代品。
 
 
 
