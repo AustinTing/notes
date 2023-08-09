@@ -24,7 +24,6 @@ Container 的標準化是由 Open Container Initiative (OCI) 負責。主要有�
 <center>圖片來源：<a href=https://www.weave.works/blog/a-practical-guide-to-choosing-between-docker-containers-and-vms>Docker vs Virtual Machines (VMs) : A Practical Guide to Docker Containers and VMs</a></center>
 
 
-
 VM 虛擬化完整 OS，運行在 Hypervisor 上。而 Container 不需要虛擬化完整 OS，運行在 container engine 上，container engine 運行在 Host OS 上。
 
 Container 不是迷你的 VM，而是一個一個獨立的 process。這些 process 被隔離及限制資源使用（訪問）。如果 process 被刪除，則 container 也會被停止。
@@ -54,19 +53,23 @@ Container 是 Image 的執行實例，且在多層 image 之上有 `read-write` 
 1. 檢查本地是否有指定的 Image，如果沒有，則從 Docker Hub 下載。
 2. 使用 Image 建立一個 Container，並執行。
 
-
-
-`docker container run [Image Name]`: 建立一個 Container。
+`docker container run [Image Name] [command]`: 建立一個 Container。
+- command 是在 Container 中要執行的命令（可以多個參數）。ex: `docker container run busybox echo "Hello World"`
+- 如果只要運行一次就結束，可以加上 `--rm`，讓 Container 停止後，自動刪除 Container。
 
 `docker container ps`: 查看目前正在執行的 Container。加 `-a` 可以查看所有的 Container。
 
 `docker container stop [Container ID]`: 停止 Container。
+
+`docker container start [Container ID]`: 啟動被 stop 的 Container。
 
 `docker container rm [Container ID]`: 刪除 Container。
 - 無法刪除正在執行的 Container，必須先停止 Container。除非加上 `-f` 選項。
 
 `docker container rm $(docker container ps -aq)`: 刪除所有 Container。
 - `-q` 或 `--quiet` 選項表示只顯示容器的短ID（Container ID），而不顯示其他詳細資訊。這將讓輸出更為簡潔。
+
+`docker system prune`: 刪除所有沒有使用的資源（包含 Container、Image、Network、Volume）。
 
 
 ## Attach and Detach Container
@@ -117,6 +120,7 @@ Detach 是指將本地的標準輸入、輸出和錯誤輸出從容器中分離�
     - 可以是 Docker Hub、Quay.io 或其他私有的 registry。
 2. 從 `Dockerfile` 建立 Image。
 3. Load 本機的 Image。
+4. 從 Container 建立 Image。在 container 裡把環境和檔案設定好，然後把 commit 成 Image。
 
 ## `docker image` 相關指令
 
@@ -142,6 +146,8 @@ Detach 是指將本地的標準輸入、輸出和錯誤輸出從容器中分離�
 `docker image load -i [File Name]`: 從 tar 檔載入 Image。
 - `docker image load -i ./busybox`
 
+`docker image prune -a`: 刪除所有沒有使用的 Image。 
+
 ## 簡介 Dockerfile
 
 Docker 藉由 `Dockerfile` 建立 Image。`Dockerfile` 是一個純文字檔案，裡面包含了一連串的關於 build image 的指令。
@@ -166,11 +172,12 @@ CMD [Command]
 3. `ADD`: 將檔案複製到 Image 中。（準備程式）
 4. `CMD`: 執行程式。
 
-## 建立 Image 與分享
+## 裡用 Dockerfile 建立 Image
 
 `docker image build -t [Image Name] [Dockerfile Path]`: 建立 Image。
 - 執行 `FROM`、`RUN`、`ADD` 以建立 Image。
 - `-t` 選項可以指定 Image 的名稱，如果名稱後面沒指定版本，預設是 `latest`。
+- 如果有多個 Dockerfile，可以用 `-f` 選項指定 Dockerfile 的路徑。
 
 `docker container run [Image Name]`: run Image。
 - 執行 Dockerfile 中的 `CMD`。
@@ -180,6 +187,187 @@ CMD [Command]
 `docker image push [Image Name]`: 將 Image 上傳到 registry。
 - 如果要 push 到 Docker Hub，要先 `docker login`。
 - Image 名稱必須是 `username/repository:tag`。
+
+`docker image history [Image Name]`: 查看 Image 的歷史紀錄。
+
+## 將現有的 Container 儲存成 Image
+
+如果在一個 container 內修改的資料，刪除 container 後，資料也會跟著刪除。如果要保留資料，可以將 container 儲存成 image。
+
+`docker container commit [Container ID] [Image Name]`: 將 Container 儲存成 Image。
+
+# Dockerfile
+
+## `FROM` 指令
+
+`FROM` 指令指定 Image 的名稱，並且可以指定版本。
+
+```dockerfile
+FROM [Image Name]:[Version]
+```
+
+在選擇 Image 時，可以考慮以下幾點：
+
+- Image 的大小。
+- Image 的版本。
+- Image 的發行商。
+- Image 的安全性。
+
+## `RUN` 指令
+
+`RUN` 指令執行一個命令，並且會在 Image 中建立一個新的 Layer。
+
+```dockerfile
+RUN [Command]
+```
+
+可以執行多個 `RUN` 指令，像是：
+
+```dockerfile
+FROM ubuntu:20.04
+RUN apt-get update
+RUN apt-get install -y wget
+RUN wget https://github.com/ipinfo/cli/releases/download/ipinfo-2.0.1/ipinfo_2.0.1_linux_amd64.tar.gz
+RUN tar zxf ipinfo_2.0.1_linux_amd64.tar.gz
+RUN mv ipinfo_2.0.1_linux_amd64 /usr/bin/ipinfo
+RUN rm -rf ipinfo_2.0.1_linux_amd64.tar.gz
+```
+
+但是這樣會造成 Image 的大小變大，因為每個 `RUN` 指令都會建立一個新的 Layer。可以儘量將多個 `RUN` 指令合併成一個 `RUN` 指令，像是：
+
+```dockerfile
+FROM ubuntu:20.04
+RUN apt-get update && \
+    apt-get install -y wget && \
+    wget https://github.com/ipinfo/cli/releases/download/ipinfo-2.0.1/ipinfo_2.0.1_linux_amd64.tar.gz && \
+    tar zxf ipinfo_2.0.1_linux_amd64.tar.gz && \
+    mv ipinfo_2.0.1_linux_amd64 /usr/bin/ipinfo && \
+    rm -rf ipinfo_2.0.1_linux_amd64.tar.gz
+```
+
+## 操作 file 相關指令
+
+### `ADD` 指令
+
+`ADD` 指令將檔案複製到 Image 中。檔案權限會一併複製。也會自動解壓縮檔案（如果檔案符合壓縮檔格式），並且可以從 URL 複製檔案。
+
+```dockerfile
+ADD [Source] [Destination]
+```
+
+`ADD` 指令
+
+### `COPY` 指令
+
+`COPY` 指令只會將檔案複製到 Image 中。不會自動解壓縮檔案，也無法從 URL 複製檔案。
+
+
+```dockerfile
+COPY [Source] [Destination]
+```
+
+### `WORKDIR` 指令
+
+`WORKDIR` 指令設定 Image 的工作目錄。如果沒有設定，預設是 `/`。如果沒有該目錄，會自動建立。
+
+```dockerfile
+FROM ubuntu:20.04
+WORKDIR /app
+# 將本機的 hello.py 複製到 /app/hello.py
+COPY hello.py hello.py
+```
+
+### `ENV` 和 `ARG` 指令
+
+`ENV` 和 `ARG` 指令都可以設定環境變數。
+
+`ENV` 指令設定的環境變數會存在 Image 中（可以進到 container 下類似 `env` 指令查看）。
+
+`ARG` 指令設定的環境變數不會存在 Image 中（只用於構建時）。但是好處是可以用 `docker image build --build-arg [ARG Name]=[Value]` 指定 `ARG` 的值。
+
+
+![Dockerfile ENV and ARG](./assets/docker-environment-build-args.png)
+
+<center>圖片來源：<a href=https://vsupalov.com/docker-arg-vs-env/>Docker ARG vs ENV</a></center>
+
+### `CMD`` 指令
+
+`CMD` 指令設定 Image 的預設執行命令。
+
+- 如果執行 `docker container run [image] [commad]` 時有指定要執行的命令，則 `CMD` 指令會**被忽略**。
+
+- 如果沒有指定要執行的命令，則會執行**最後一個** `CMD` 指令。所以如果不想要執行 Image/Layer 裡，最後的 CMD 指令，可以在最後加上 `CMD []`。
+
+### `ENTRYPOINT` 指令
+
+`ENTRYPOINT` 指令設定 Image 的預設執行命令，不像 `CMD` 指令可以被忽略。
+
+```dockerfile
+FROM ubuntu:20.04
+ENTRYPOINT ["echo", "hello docker"]
+```
+
+```bash
+$ docker container run -it --rm demo-entrypoint
+hello docker
+$ docker container run -it --rm demo-entrypoint echo "hello world"
+hello docker echo hello world
+$
+```
+
+### 執行命令的寫法
+
+`CMD` 和 `ENTRYPOINT` 指令都可以用 `shell` 和 `exec` 的寫法。
+
+`shell` 的寫法：
+
+```dockerfile
+CMD echo "hello docker"
+```
+
+`exec` 的寫法：
+
+```dockerfile
+CMD ["echo", "hello docker"]
+```
+
+要注意如果是用 `exec` 的寫法，要存取環境變數，除了要用 `${}` 包起來外，還要註明是用 `shell` 來執行。下面這樣寫會無法存取環境變數。
+
+```dockerfile
+FROM ubuntu:20.04
+ENV NAME=docker
+CMD ["echo", "hello $NAME"]
+```
+
+要改成，使用 shell 運行 echo 命令，並在 shell 中解析 $NAME。
+
+```dockerfile
+FROM ubuntu:20.04
+ENV NAME=docker
+CMD ["sh", "-c", "echo hello $NAME"]
+```
+
+> ChatGPT
+> 當你使用 CMD 命令定義要在容器中運行的命令時，Docker 不會通過 shell 執行這個命令，而是直接運行該命令。因此，如果你的 CMD 命令是一個 JSON 數組，Docker 將把整個數組的內容當作命令的部分進行執行。
+
+## Dockerfile 的小技巧
+
+**合理使用 Cache**
+
+Docker 執行每個指令時，會先檢查是否有 Cache。如果有 Cache，則會使用 Cache，而不是重新執行指令。
+
+但如果執行指令時，發現執行內容有修改（比如：`COPY hello.py hello.py` 但 `hello.py` 程式碼有修改），則會從該指令開始，之後的指令都不使用 Cache。
+
+所以如果有一個指令會經常修改，則可以將該指令放在最後，這樣可以減少重新執行指令的次數。
+
+
+
+
+
+
+
+
+
 
 
 
