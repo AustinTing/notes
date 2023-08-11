@@ -4,6 +4,8 @@
 
 如何打造可以處理所有即時 event 及可以將 event 歷史回顧的單一平台。
 
+消峰 和 解偶。
+
 # [Fundamentals](https://www.youtube.com/watch?v=B5j3uNBH8X4)
 
 Producers 和 Consumers 互相解偶，互不知彼此，所以可以各自添加、更新或是 scale up 。
