@@ -198,6 +198,8 @@ CMD [Command]
 
 # Dockerfile
 
+[Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
+
 ## `FROM` 指令
 
 `FROM` 指令指定 Image 的名稱，並且可以指定版本。
@@ -290,7 +292,7 @@ COPY hello.py hello.py
 
 <center>圖片來源：<a href=https://vsupalov.com/docker-arg-vs-env/>Docker ARG vs ENV</a></center>
 
-### `CMD`` 指令
+### `CMD` 指令
 
 `CMD` 指令設定 Image 的預設執行命令。
 
@@ -313,6 +315,12 @@ hello docker
 $ docker container run -it --rm demo-entrypoint echo "hello world"
 hello docker echo hello world
 $
+```
+
+如果想跳過 image 的 `ENTRYPOINT` 指令，可以使用 `--entrypoint` 指定要執行的命令或是設定為 `/bin/bash` 進入 container。
+
+```bash
+$ docker container run -it --rm --entrypoint /bin/bash demo-entrypoint
 ```
 
 ### 執行命令的寫法
@@ -359,6 +367,157 @@ Docker 執行每個指令時，會先檢查是否有 Cache。如果有 Cache，�
 但如果執行指令時，發現執行內容有修改（比如：`COPY hello.py hello.py` 但 `hello.py` 程式碼有修改），則會從該指令開始，之後的指令都不使用 Cache。
 
 所以如果有一個指令會經常修改，則可以將該指令放在最後，這樣可以減少重新執行指令的次數。
+
+**只複製需要的檔案**
+
+在 image build 的時候，如果是用 `docker image build -t [tag] .` 的方式（最後的 `.` 是當前目錄所有資料），docker 會把目前目錄下的所有檔案當作 build 的 context，這樣會導致 build 的時間變長。
+
+所以可以在 `.dockerignore` 檔案中，設定不要複製的檔案。
+
+```.dockerignore
+.vscode
+env/
+```
+
+**使用多階段（stages）建置**
+
+如果最終的 Image 不會需要用到中間過程的檔案，可以使用多階段建置，這樣可以減少 Image 的大小。
+
+比如：最終產物是一個執行檔，但是在 build 的過程中，需要用到編譯器。這時可以使用多階段建置，第一階段使用編譯器，第二階段只複製執行檔。這樣就不用連編譯器都要放進 Image 中。
+
+```dockerfile
+FROM gcc:9.4 AS builder
+
+COPY hello.c /src/hello.c
+
+WORKDIR /src
+
+RUN gcc --static -o hello hello.c
+
+
+# 基於 alpine:3.13.5 映像建立最終映像
+FROM alpine:3.13.5
+# 從前一個 builder 階段的容器中複製可執行文件 hello 到本階段的 /src/hello 目錄。
+COPY --from=builder /src/hello /src/hello
+
+ENTRYPOINT [ "/src/hello" ]
+
+CMD []
+```
+
+**使用非 root 使用者**
+
+因為 Docker 預設使用 root 使用者，所以如果在 Image 中使用 root 使用者，會有安全性的問題。
+
+所以可以在 Image 中建立一個非 root 使用者及非 root 的 group 並且在 `USER` 指令中，切換到非 root 使用者。
+
+```dockerfile
+FROM python:3.9.5-slim
+
+RUN pip install flask && \
+    # 創建一個名為 flask 的系統群組，然後創建一個名為 flask 的系統使用者，並將使用者添加到 flask 群組中。
+    groupadd -r flask && useradd -r -g flask flask && \
+    mkdir /src && \
+    # 將 /src 目錄的所有權限分配給 flask 群組和使用者。
+    chown -R flask:flask /src
+# ... 省略 ...
+```
+
+# Docker Storage
+
+如果 container 被刪除，container 內的資料也會被刪除。如果要保留資料，可以使用幾種方式：
+
+- Volumes
+- Bind Mounts
+- tmpfs Mounts
+
+
+![types-of-mounts-volume](./assets/types-of-mounts-volume.png)
+
+<center>圖片來源：<a href=https://docs.docker.com/storage/volumes/>Volumes</a></center>
+
+## Volumes
+
+Volumes 提供了一個容器和容器之間或容器和主機之間的持久化儲存。
+
+有兩種方式可以使用 Volumes：
+
+- 在 Dockerfile 中使用 `VOLUME` 指令。
+- 在 `docker container run` 時使用 `-v` 選項。
+
+
+
+### Dockerfile `VOLUME` 指令
+
+在 Dockerfile 中使用 `VOLUME` 指令，來指定要持久化的目錄。
+
+```dockerfile
+# ... 省略 ...
+# 將 /data 設定成為持久化目錄。
+VOLUME ["/data"]
+# ... 省略 ...
+```
+
+每次執行 `docker container run` 時，都會建立一個新的 Volume。
+
+就算 Container 被刪除，Volume 也不會被刪除。
+
+
+### `docker container run` 時使用 `-v` 選項
+
+在 `docker container run` 時使用 `-v` 選項，來指定要持久化的目錄並且指定 Volume 的名稱。
+
+```bash
+$ docker container run -v [Volume Name]:[Container Path] [Image Name]
+```
+
+如果沒有指定 Volume 的名稱，則會自動產生一個 Volume 名稱。
+
+```bash
+$ docker run -d -v /app my-cron 
+0e1c818e4b5166153edb8dcf5837f250a42d7a556980fb32dd01eb753ed15697
+$ docker volume ls             
+DRIVER    VOLUME NAME
+local     fe213b627be3c58170c2eaa6f877c1c5e3bbdd3702bdd7e72771d931b7532133
+```
+
+如果有指定 Volume 的名稱，則會使用該 Volume。如果該 Volume 不存在，則會自動建立一個 Volume。
+
+```bash
+$ docker run -d -v cron-data:/app my-cron
+72bf14597bb43452b044f2c3c70a835004e3e87e7af5232b435c73219956bb2c
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     cron-data
+```
+
+### 常用 Volume 指令
+
+`docker volume ls`: 查看目前所有的 Volume。
+
+`docker volume inspect [Volume Name]`: 查看 Volume 的詳細資訊，結果類似如下：
+
+
+```
+[
+    {
+        "CreatedAt": "2023-08-11T10:15:00Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/babfdee343df97e23d82ca62d361141b066d1a6511bcf5155fe95ed09c8c324c/_data",
+        "Name": "babfdee343df97e23d82ca62d361141b066d1a6511bcf5155fe95ed09c8c324c",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+
+`Mountpoint` 欄位就是 Volume 的實際位置。如果是 Linux 系統，可以直接到該目錄下查看。但 Windows 和 Mac 需要透過 Docker Desktop 才能查看。
+
+`docker volume rm [Volume Name]`: 刪除 Volume。
+
+`docker volume prune`: 刪除所有沒有被任何 Container 使用的 Volume。
+
 
 
 
