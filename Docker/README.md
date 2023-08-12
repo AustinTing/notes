@@ -423,13 +423,15 @@ RUN pip install flask && \
 # ... 省略 ...
 ```
 
+但在 mount volume 時，使用非 root 使用者要注意權限的問題。
+
 # Docker Storage
 
 如果 container 被刪除，container 內的資料也會被刪除。如果要保留資料，可以使用幾種方式：
 
-- Volumes
-- Bind Mounts
-- tmpfs Mounts
+- Volume
+- Bind Mount
+- tmpfs Mount
 
 
 ![types-of-mounts-volume](./assets/types-of-mounts-volume.png)
@@ -444,6 +446,8 @@ Volumes 提供了一個容器和容器之間或容器和主機之間的持久化
 
 - 在 Dockerfile 中使用 `VOLUME` 指令。
 - 在 `docker container run` 時使用 `-v` 選項。
+
+就算 Container 被刪除，Volume 也不會被刪除。
 
 
 
@@ -460,12 +464,12 @@ VOLUME ["/data"]
 
 每次執行 `docker container run` 時，都會建立一個新的 Volume。
 
-就算 Container 被刪除，Volume 也不會被刪除。
 
 
 ### `docker container run` 時使用 `-v` 選項
 
 在 `docker container run` 時使用 `-v` 選項，來指定要持久化的目錄並且指定 Volume 的名稱。
+
 
 ```bash
 $ docker container run -v [Volume Name]:[Container Path] [Image Name]
@@ -517,6 +521,82 @@ local     cron-data
 `docker volume rm [Volume Name]`: 刪除 Volume。
 
 `docker volume prune`: 刪除所有沒有被任何 Container 使用的 Volume。
+
+## Bind Mounts
+
+Bind Mounts 提供了一個容器和主機之間的持久化儲存。
+
+在 `docker container run` 時，有兩種方式可以使用 Bind Mounts：
+
+- 使用 `-v` 選項。
+- 使用 `--mount` 選項。
+
+兩者差別在於，`--mount` 選項可以指定更多的選項，像是 `readonly`、`volume-opt` 等等。
+
+**使用 `-v` 選項**
+
+```bash
+$ docker container run -v [Host Path]:[Container Path] [Image Name]
+```
+
+- [Host Path] 一定要是絕對路徑。
+
+
+如果想將本機的 `/Users/username/data` 目錄掛載到 Container 的 `/data` 目錄：
+
+```bash
+$ docker container run -v /Users/username/data:/data image-name
+```
+
+**使用 `--mount` 選項**
+
+```bash
+$ docker container run --mount type=bind,source=[Host Path],target=[Container Path] [Image Name]
+```
+
+如果想要讓 Container 讀取本機的配置文件，但不想讓他修改，就可以使用 `readonly` 選項。
+
+```bash
+$ docker run -d --name myapp --mount type=bind,source="$(pwd)"/app,target=/app,readonly your-image-name
+```
+
+## 多台機器間共享 Volume
+
+有多種方式可以讓多台機器間共享 Volume，像是 AWS S3、NFS 等。流程大致如下：
+
+1. 在多台機器上安裝 Volume Driver Plugin。
+2. 在多台機器上建立 Volume。
+3. 在多台機器上建立 Container，並且使用 Volume。
+
+以 sshfs 為例：
+
+在多台機器上安裝 sshfs:
+
+```bash
+$ docker plugin install --grant-all-permissions vieux/sshfs
+```
+
+在多台機器上建立 Volume:
+
+```bash
+$ docker volume create \
+    --driver vieux/sshfs \
+    -o sshcmd=vagrant@192.168.200.12:/home/vagrant \
+    -o password=vagrant \
+    sshvolume
+```
+
+在多台機器上建立 Container，並且使用 Volume:
+
+```bash
+docker container run \
+    -it \
+    -v sshvolume:/app \
+    busybox sh
+```
+
+
+
 
 
 
