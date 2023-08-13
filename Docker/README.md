@@ -314,7 +314,6 @@ $ docker container run -it --rm demo-entrypoint
 hello docker
 $ docker container run -it --rm demo-entrypoint echo "hello world"
 hello docker echo hello world
-$
 ```
 
 如果想跳過 image 的 `ENTRYPOINT` 指令，可以使用 `--entrypoint` 指定要執行的命令或是設定為 `/bin/bash` 進入 container。
@@ -464,8 +463,6 @@ VOLUME ["/data"]
 
 每次執行 `docker container run` 時，都會建立一個新的 Volume。
 
-
-
 ### `docker container run` 時使用 `-v` 選項
 
 在 `docker container run` 時使用 `-v` 選項，來指定要持久化的目錄並且指定 Volume 的名稱。
@@ -595,23 +592,222 @@ docker container run \
     busybox sh
 ```
 
+# Docker Network
+
+Docker Network 提供了一個容器和容器之間或容器和主機之間的網路連線。
+
+## Network 基礎
+
+![tcp-syn](./assets/tcp-syn.jpg)
+
+<center>圖片來源：<a href=https://www.homenethowto.com/advanced-topics/traffic-example-the-full-picture/>Traffic example, the full picture</a></center>
+
+幾個常用指令：
+
+- `ifconfig`: 查看網路介面的資訊。
+- `ip addrping`: 查看網路介面的資訊(更詳細)。
+- `ping`: 測試網路是否通。
+- `telnet`: 測試 TCP 連線。
+- `tracepath`: 查看封包的路徑。
+
+## Container Network 的議題
+
+- Container 如何得到 IP 位址？
+- 為什麼 Host 可以 PING 到 Container？
+- 為什麼 Container 之間可以互相 PING 到？
+- Container 如何連線到外部網路？
+- Container 的 Port 是如何轉發？
+
+## Docker Bridge Network
 
 
+![Docker Bridge](./assets/two-containers-network.jpeg)
+
+<center>圖片來源：<a href=https://dockertips.readthedocs.io/en/latest/single-host-network/docker-bridge.html>Docker Bridge 网络</a></center>
+
+### 容器之間的網路
+
+兩台電腦如果用網路線互連，配置好彼此的 IP 位址，就可以互相通訊。但如果有多台電腦，不可能每台電腦網路線一一相連，就需要一個交換器（Switch）來連接多台電腦。
+
+Switch 會用 DCP 協定，來自動分配 IP 位址給電腦。每台電腦會有一個預設的 Gateway，預設連至 switch。
+
+在 Docker 中，Bridge就是一個 Switch，每個 Container 會有一個 IP 位址，並且會有一個預設的 Gateway。
+
+Docker 會自動建立 Bridge Network，如果封包是要傳給同為內網的 container，就會直接轉發。下面的 `docker0` 即是 Bridge Network:
+
+```bash
+$ ifconfig
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:c3:4e:b2:91  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens4: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1460
+        inet 10.142.0.7  netmask 255.255.255.255  broadcast 0.0.0.0
+        inet6 fe80::4001:aff:fe8e:7  prefixlen 64  scopeid 0x20<link>
+        ether 42:01:0a:8e:00:07  txqueuelen 1000  (Ethernet)
+        RX packets 175723896  bytes 118267582558 (118.2 GB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 242554177  bytes 112031949582 (112.0 GB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 34917734  bytes 100221718551 (100.2 GB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 34917734  bytes 100221718551 (100.2 GB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+`docker network ls`: 可以查看目前所有的 Network。
+
+```bash
+$ docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+e7ad19deaec2   bridge    bridge    local
+54a27455a865   host      host      local
+ac5a26bf649d   none      null      local
+```
+
+`docker network inspect [Network Name]`: 可以查看 Network 的詳細資訊。
+
+```bash
+$ docker network inspect e7ad19deaec2
+[
+    {
+        "Name": "bridge",
+        "Id": "e7ad19deaec2a69dd0ce885b9a7e80e60960443b56820fddcf87a1099c11d63b",
+        "Created": "2023-08-12T07:36:59.726258518Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16"
+                }
+            ]
+        },
+ # ... 省略 ...
+        "Containers": {
+            "129ad07763d6487fdbfed201b4b2b721ebf0442441b40d534ffad05c943cf489": {
+                "Name": "box2",
+                "EndpointID": "9b8ef6d296aea92ff058049ea166011157e59c5186720f58ad54b8e23085dade",
+                "MacAddress": "02:42:ac:11:00:04",
+                "IPv4Address": "172.17.0.4/16",
+                "IPv6Address": ""
+            },
+            "950dc8812b9bedf583c9c74f3d196c82de615f0fbb75705580d9379076b08f15": {
+                "Name": "box3",
+                "EndpointID": "b5dc7b752c61ec0389717784d0d9a7cd43a5aa86d4792246129742e4fdcc26ea",
+                "MacAddress": "02:42:ac:11:00:03",
+                "IPv4Address": "172.17.0.3/16",
+                "IPv6Address": ""
+            },
+            "bae5e910a5e1662956cf9970b6b2864cba08beb0bf1458ab73f3eeaac20ec3be": {
+                "Name": "box1",
+                "EndpointID": "a2e8404f99520f579e415e9b011133cf52a57817eb4cca8904d8e52f01049d62",
+                "MacAddress": "02:42:ac:11:00:02",
+                "IPv4Address": "172.17.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+    # ... 省略 ...
+```
+
+- Docker 會從 `subnet` 中分配 IP 位址給 Container。
+- `Containers` 欄位會列出目前 Container 的 Network。
+
+`brctl show`: 可以查看 Bridge Network 的詳細資訊。
+
+```bash
+$ brctl show
+bridge name     bridge id               STP enabled     interfaces
+docker0         8000.0242759468cf       no              veth8c9bb82
+                                                        vethd8f9afb`
+```
+
+### 容器對外部的網路
+
+如果 Bridge Network 收到 container 發出的封包，檢查目的地不是 Bridge Network 內部 Container，就會將封包轉發到 Host 的 Network。
+
+查看 IP 路由表：
+
+```bash
+$ ip route
+default via 10.142.0.1 dev ens4 proto dhcp src 10.142.0.7 metric 100 
+10.142.0.1 dev ens4 proto dhcp scope link src 10.142.0.7 metric 100 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 
+```
+
+Host 的 Network 再把資料發出去。發出去之前會進行 NAT（Network Address Translation）。可以查看 NAT 規則：
+
+```bash
+$ sudo iptables --list -t nat
+Chain PREROUTING (policy ACCEPT)
+target     prot opt source               destination
+DOCKER     all  --  anywhere             anywhere             ADDRTYPE match dst-type LOCAL
+
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+DOCKER     all  --  anywhere            !loopback/8           ADDRTYPE match dst-type LOCAL
+
+# 注意這段
+Chain POSTROUTING (policy ACCEPT)
+target     prot opt source               destination
+MASQUERADE  all  --  172.17.0.0/16        anywhere
+
+Chain DOCKER (2 references)
+target     prot opt source               destination
+RETURN     all  --  anywhere             anywhere
+```
+
+- 在 POSTROUTING 可以看到有一個 `MASQUERADE` 規則，這個規則將所有來自 172.17.0.0/16 子網的封包進行 MASQUERADE，這是一種 Network Address Translation（NAT）操作，用於將內部網絡的 IP 地址轉換為外部網絡的公共 IP 地址，從而允許多個內部設備共享單個公共 IP 地址。
+- [NAT Explained - Network Address Translation](https://www.youtube.com/watch?v=FTUV0t6JaDA): 這個機制原本是要解決 IPv4 位址不夠用的問題，但現在 IPv6 已經普及，所以這個機制已經不太需要了。
+
+Container 因此可以連線到外部網路，且外部網路看到的 IP 位址都是 Host 的 IP 位址。
 
 
+## docker network 相關指令
+
+`docker network create [Network Name]`: 建立一個新的 Network。幾個主要的選項：
+- `-d`: 指定 Network 的 Driver，預設是 Bridge。
+- `--subnet`: 指定 Network 的 subnet。
+- `--gateway`: 指定 Network 的 gateway。
 
 
+`docker container run --network [Network Name] [Image Name]`: 建立一個新的 Container，並且指定 Network。
+
+`docker container inspect [Container Name]`: 查看 Container 的詳細資訊，也可以看到 Container 的 Network。像是自己的 IP 、 gateway IP、 目前是哪個 bridge 等等。
+
+`docker network connect [Network Name] [Container Name]`: 將 Container 加入 Network。
+
+- 同一個 Container 可以加入多個 Network。
+- 如果 Container 加入多個 Network，則會有多個 IP 位址。
+
+`docker network disconnect [Network Name] [Container Name]`: 將 Container 從 Network 移除。
 
 
+**自定義 Network**
 
+如果自己創建 Network Bridge，則在 Network 中的 Container 可以用 Container Name 互相連線。但是預設的 Bridge Network 則不行。
 
-
-
-
-
-
-
-
+```bash
+$ docker network create my-network
+$ docker container run -d --name box1 --network my-network busybox sleep 1000
+$ docker container run -d --name box2 --network my-network busybox sleep 1000
+$ docker container exec -it box1 ping box2
+```
 
 # Other Tools
 
