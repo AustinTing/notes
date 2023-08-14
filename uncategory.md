@@ -42,3 +42,18 @@
 
 - [regex101]
     - 可以學習和理解正則表達式的網站。
+
+# Github Issue Markdown
+
+讓圖片可以並排顯示：
+
+```md
+<img width="389" alt="image" src="name.png"><img width="389" alt="image" src="name2.jpg">
+
+or
+// 50 有時還是會換行
+<div style="display: flex;">
+    <img src="" width="49%" />
+    <img src="https://github.com/CalyxInc/software-team/assets/84309449/fc4483da-de42-427f-a2f1-e087d6b75fc8" width="49%" />
+</div>
+```
