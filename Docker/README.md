@@ -809,6 +809,18 @@ $ docker container run -d --name box2 --network my-network busybox sleep 1000
 $ docker container exec -it box1 ping box2
 ```
 
+## Port Forwarding
+
+外部網路要連線到 Container 內的 Port，需要透過 Port Forwarding。
+
+```bash
+$ docker container run -d --name box1 -p 8080:80 nginx
+```
+
+- `-p 8080:80` 代表將 Host 的 8080 Port 轉發到 Container 的 80 Port。
+
+
+
 # Other Tools
 
 - [Orbstack](https://orbstack.dev/)
