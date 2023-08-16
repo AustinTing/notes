@@ -819,6 +819,12 @@ $ docker container run -d --name box1 -p 8080:80 nginx
 
 - `-p 8080:80` 代表將 Host 的 8080 Port 轉發到 Container 的 80 Port。
 
+原理是 Docker 會建立一個 NAT 規則，這個規則在 iptables 中，可以用 `iptables -t nat -nvxl` 查看。
+
+- `-t nat`: 指定要查看的 table。
+
+
+
 
 
 # Other Tools
