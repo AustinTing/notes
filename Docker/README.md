@@ -819,10 +819,35 @@ $ docker container run -d --name box1 -p 8080:80 nginx
 
 - `-p 8080:80` 代表將 Host 的 8080 Port 轉發到 Container 的 80 Port。
 
-原理是 Docker 會建立一個 NAT 規則，這個規則在 iptables 中，可以用 `iptables -t nat -nvxl` 查看。
+原理是 Docker 會建立一個 NAT 規則，這個規則在 iptables 中，可以用 `iptables -t nat -nvxL` 查看：
 
 - `-t nat`: 指定要查看的 table。
+```
+Chain PREROUTING (policy ACCEPT 0 packets, 0 bytes)
+    pkts      bytes target     prot opt in     out     source               destination         
+       4      276 DOCKER     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ADDRTYPE match dst-type LOCAL
 
+Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
+    pkts      bytes target     prot opt in     out     source               destination         
+
+Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
+    pkts      bytes target     prot opt in     out     source               destination         
+       0        0 DOCKER     all  --  *      *       0.0.0.0/0           !127.0.0.0/8          ADDRTYPE match dst-type LOCAL
+
+Chain POSTROUTING (policy ACCEPT 0 packets, 0 bytes)
+    pkts      bytes target     prot opt in     out     source               destination         
+       0        0 MASQUERADE  all  --  *      !docker0  172.17.0.0/16        0.0.0.0/0           
+       0        0 MASQUERADE  tcp  --  *      *       172.17.0.2           172.17.0.2           tcp dpt:80
+# 注意這段
+Chain DOCKER (2 references)
+    pkts      bytes target     prot opt in     out     source               destination         
+       0        0 RETURN     all  --  docker0 *       0.0.0.0/0            0.0.0.0/0           
+       0        0 DNAT       tcp  --  !docker0 *       0.0.0.0/0            0.0.0.0/0            tcp dpt:8080 to:172.17.0.2:80
+```
+
+- `DNAT`：表示目標地址轉換（Destination Network Address Translation）。這個規則是一個 DNAT 規則，用於修改封包的目標地址和端口。
+可以看到上面的 `DNAT` 規則，將來自外部網路的封包，轉發到 Container(172.17.0.2) 的 80 Port。
+- `dpt:8080`: 表示目標端口（Destination Port）是 8080。
 
 
 
