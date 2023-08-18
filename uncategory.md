@@ -17,7 +17,17 @@
 - `man`  
   - `b/空白`：上/下一頁  
   - `/目標`：搜尋。用 `N/n` 來跳 上/下 一個目標。  
-  - `?目標`：向上搜尋。  
+  - `?目標`：向上搜尋。
+- `ssh -vvv user@host`: 查看 ssh 連線過程。
+  - `-vvv`：最詳細的 log。
+
+## Issues
+
+** ssh: Could not resolve hostname [Host]: nodename nor servname provided, or not known **
+
+- 如果直接 ping HostName 有通，檢查 .ssh/config 是否有設定是否正確，是否有 typo。
+- `ssh -vvv [HostName]`: 查看 ssh 連線過程。如果有出現 `debug1: Connecting [Host] to host port 22.` 表示 ssh 設定檔可能有問題，備份 `.ssh/know_hosts` 後，刪除 `.ssh/know_hosts` 後再試試看。
+
 ## Web
 
 網頁切換頁面時，開啟 preserve log 可以儲存 request 紀錄。
