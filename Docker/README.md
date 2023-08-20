@@ -849,6 +849,30 @@ Chain DOCKER (2 references)
 可以看到上面的 `DNAT` 規則，將來自外部網路的封包，轉發到 Container(172.17.0.2) 的 80 Port。
 - `dpt:8080`: 表示目標端口（Destination Port）是 8080。
 
+在 Dockerfile 中也可以指定 Port Forwarding:
+
+```dockerfile
+FROM nginx:1.21.1
+EXPOSE 80
+```
+
+`EXPOSE` 不會自動將 Port Forwarding 到 Host，只是告訴 Docker，這個 Image 的 Container 會使用哪些 Port，且讓用戶知道要把外部網路的哪些 Port 轉發到 Container 的哪些 Port。
+
+如果用戶要檢查 Image 的 Port Forwarding 規則，可以用 `docker image inspect [Image Name]` 查看。在結果中的 `ExposedPorts` 欄位可以看到 Port Forwarding 的規則。
+
+```bash
+$ docker image inspect nginx
+[
+    {
+       # ... 省略 ...
+        "ContainerConfig": {
+            # ... 省略 ...
+            "ExposedPorts": {
+                "80/tcp": {}
+            },
+ # ... 省略 ...
+```
+
 
 
 
