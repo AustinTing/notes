@@ -873,7 +873,27 @@ $ docker image inspect nginx
  # ... 省略 ...
 ```
 
+## Host Network
 
+可以在 `docker container run` 時，使用 `--network host` 選項，讓 Container 使用 Host 的 Network。這樣就會像是在 Host 上執行程式一樣，可以使用 Host 的 IP 位址。
+
+```bash
+$ docker container run -d --name web --network host nginx
+```
+
+這樣就可以使用 `localhost:80` 連線到 Container 的 80 Port。
+
+因為不需要進行 Port Forwarding，所以效能會比 Bridge Network 好。
+
+## None Network
+
+可以在 `docker container run` 時，使用 `--network none` 選項，讓 Container 不使用任何 Network。
+
+```bash
+$ docker container run -d --name web --network none nginx
+```
+
+這樣 Container 就無法連線到外部網路，也無法被外部網路連線。主要是用在特定的情境。
 
 
 # Other Tools
