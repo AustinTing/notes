@@ -4,6 +4,9 @@
 ## Linux  
 
 - `cat /proc/cpuinfo`: 列出硬體基本資訊  
+- `ls`
+  - `-t`：依時間排序，而不是用檔名。
+  - `-h`：將檔案容量以人類較易讀的方式(例如 GB, KB 等等)列出來。
 - `df -h`: 看空間大小  
 - `lsb_release -a` or `/etc/os-release` or `Raspbian GNU/Linux 10 `: 查看 OS 發佈版。  
 - 套件管理  
@@ -20,6 +23,17 @@
   - `?目標`：向上搜尋。
 - `ssh -vvv user@host`: 查看 ssh 連線過程。
   - `-vvv`：最詳細的 log。
+- `grep`
+  - `-E 'regex'`：使用正規表達式。
+  - `-i 'string'`：忽略大小寫。
+- `nmap -sP 192.168.1.0/24`: 掃描網路上的裝置。
+- `nmap -p 22 --open -sV 192.168.1.0/24`: 掃描網路上的裝置，並列出有開啟 22 port 的裝置。
+- `curl http://myexternalip.com/raw` or `curl http://ipecho.net/plain`: 查看外部 IP。
+- `sudo ufw status`: 查看防火牆狀態。
+- `ufw allow to any port 31880`: 開放 31880 port。
+- `uname -a`: 查看 Linux 版本。
+- [開機自動執行](https://blog.twshop.asia/ubuntu-18-04-%E9%96%8B%E6%A9%9F%E8%87%AA%E5%8B%95%E5%9F%B7%E8%A1%8C%E7%A8%8B%E5%BC%8F/)
+- [使用 systemd 避免複雜性](https://mgdm.net/weblog/systemd/): 如何使用 systemd 架設一個開機啟動的網站。
 
 ## Issues
 
