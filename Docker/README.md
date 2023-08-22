@@ -878,12 +878,14 @@ $ docker image inspect nginx
 可以在 `docker container run` 時，使用 `--network host` 選項，讓 Container 使用 Host 的 Network。這樣就會像是在 Host 上執行程式一樣，可以使用 Host 的 IP 位址。
 
 ```bash
-$ docker container run -d --name web --network host nginx
+$ docker container run -d --rm --name busybox --network host busybox /bin/sh -c "while true; do sleep 3600; done"
 ```
+
+進去 Container 查看 IP 位址，可以發現 IP 位址和 Host 的 IP 位址一樣。
 
 這樣就可以使用 `localhost:80` 連線到 Container 的 80 Port。
 
-因為不需要進行 Port Forwarding，所以效能會比 Bridge Network 好。
+因為不需要進行 Port Forwarding，所以效能會比 Bridge Network 好。（But ChatGPT 說這樣可能會有安全性的問題）。
 
 ## None Network
 
@@ -894,6 +896,17 @@ $ docker container run -d --name web --network none nginx
 ```
 
 這樣 Container 就無法連線到外部網路，也無法被外部網路連線。主要是用在特定的情境。
+
+## Network Namespace
+
+Network Namespace 是 Linux 的一個功能，可以讓不同的 Process 使用不同的 Network。
+
+在 Docker 中，每個 Container 都會有自己的 Network Namespace，所以每個 Container 都有自己的 IP 位址、Gateway 等等。
+
+
+**Further Reading List**
+
+- [NAT - Network Address Translation](https://www.karlrupp.net/en/computer/nat_tutorial)
 
 
 # Other Tools
