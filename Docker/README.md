@@ -907,7 +907,7 @@ Network Namespace 是 Linux 的一個功能，可以讓不同的 Process 使用�
 **Further Reading List**
 
 - [NAT - Network Address Translation](https://www.karlrupp.net/en/computer/nat_tutorial)
-
+- [What happens when you open a terminal and enter ‘ls’](https://www.warp.dev/blog/what-happens-when-you-open-a-terminal-and-enter-ls)
 
 # Other Tools
 
