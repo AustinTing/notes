@@ -34,3 +34,7 @@ MASQUERADE 會動態地將封包的來源 IP 改成 Router 的外部 IP。適合
 - 適合在 PREROUTING 和 OUTPUT 規則鏈中使用。
 
 DNAT 有一種特殊的情況就是 `REDIRECT`，Packets 會被送到 Router 的某個 port。
+
+### 參考資料
+
+- [NAT - Network Address Translation](https://www.karlrupp.net/en/computer/nat_tutorial)
