@@ -38,6 +38,57 @@
 - [開機自動執行](https://blog.twshop.asia/ubuntu-18-04-%E9%96%8B%E6%A9%9F%E8%87%AA%E5%8B%95%E5%9F%B7%E8%A1%8C%E7%A8%8B%E5%BC%8F/)
 - [使用 systemd 避免複雜性](https://mgdm.net/weblog/systemd/): 如何使用 systemd 架設一個開機啟動的網站。
 
+## 連線至 gateway
+
+Mac 下載 Coolterm ，然後將 mac 與 gateway 接 USB。
+
+在設定中掃 port 會看到對應的接口，就可以連線登入進 gateway。
+
+或是先進入 `cd /dev/`
+```
+ls cu.*  // 列出先在有的
+```
+應該會找到一個類似 cu.usbmodem14201 的接口，接著測試連線的速度：
+
+```
+stty -f cu.usbmodem14201 speed
+```
+
+連線
+
+```
+cat cu.usbmodem14201 & stty -f cu.usbmodem14201 9600
+```
+
+把執行搬到前景
+
+```
+fg
+```
+開另一個 terminal 視窗，對它下指令，一開始下幾個enter
+
+```
+ echo -ne "\n" > cu.usbmodem14201
+```
+
+回到 fg 的視窗，會看到有反應, 接著登入
+
+```
+echo -ne "admin\n" > cu.usbmodem14201
+echo -ne "password\n" > cu.usbmodem14201
+```
+
+```
+下 ifconfig
+
+```
+echo -ne "sudo -i\n" > cu.usbmodem14201
+echo -ne "password\n" > cu.usbmodem14201
+echo -ne "ifconfig\n" > cu.usbmodem14201
+```
+
+就可以看到 ip了
+
 ## Issues
 
 ** ssh: Could not resolve hostname [Host]: nodename nor servname provided, or not known **
