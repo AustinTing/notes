@@ -1,5 +1,16 @@
 # MongoDB
 
+## 本機 Docker 快速啟動
+
+```bash
+docker run --name mongodb \
+-e MONGO_INITDB_ROOT_USERNAME=userName \
+-e MONGO_INITDB_ROOT_PASSWORD=password \
+-v mongodb:/data/db \
+-p 27017:27017 \
+-d mongo:latest
+```
+
 ## 在 MongoDB 上的資料模型設計
 
 整理 吳明宗 老師在 2022 MongoDB Day 的演講。 
