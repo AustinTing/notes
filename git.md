@@ -1,5 +1,11 @@
 # Git
 
+刪掉最近的一次 commit
+
+```
+git reset --hard HEAD^
+```
+
 ### 修正 commit
 
 要修正作者時，先 rebase 到要修正的 commit 的前一個 commit：
