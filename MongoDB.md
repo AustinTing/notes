@@ -3,7 +3,7 @@
 ## 本機 Docker 快速啟動
 
 ```bash
-docker run --name mongodb \
+docker container run --name mongodb \
 -e MONGO_INITDB_ROOT_USERNAME=userName \
 -e MONGO_INITDB_ROOT_PASSWORD=password \
 -v mongodb:/data/db \
