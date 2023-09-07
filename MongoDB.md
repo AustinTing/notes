@@ -11,6 +11,43 @@ docker container run --name mongodb \
 -d mongo:latest
 ```
 
+## 用遞回方式處理 DB concurrency 操作 Error 的問題
+
+以 TypeScript 為例，當錯誤發生時，會進入 catch 區塊，這時可以在 catch 區塊中再次呼叫自己，達到重新處理的效果。
+
+```ts
+// ... In some class
+private async operateData(
+    data: Data,
+    retryTime = 0,
+  ) {
+    try {
+      const session = await this.connection.startSession();
+      if (session) session.startTransaction();
+      try {
+         // ... do some transaction
+        if (session) await session.commitTransaction();
+      } catch (error) {
+        if (session) await session.abortTransaction();
+        throw error;
+      } finally {
+        if (session) await session.endSession();
+      }
+    } catch (error) {
+      if (retryTime < 3) {
+        retryTime++;
+        await this.operateData(
+          data,
+          retryTime,
+        );
+      } else {
+        console.error("Transaction failed and retry 3 times. Error: ", error);
+        throw error;
+      }
+    }
+  }
+```
+
 ## 在 MongoDB 上的資料模型設計
 
 整理 吳明宗 老師在 2022 MongoDB Day 的演講。 
