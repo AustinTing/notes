@@ -903,6 +903,15 @@ Network Namespace 是 Linux 的一個功能，可以讓不同的 Process 使用�
 
 在 Docker 中，每個 Container 都會有自己的 Network Namespace，所以每個 Container 都有自己的 IP 位址、Gateway 等等。
 
+測試 Network Namespace 的方式：
+
+- `sudo brctl addbr mydocker0`: 創建 bridge 。
+- 利用這個 [script](./66-add-ns-to-br.sh.sh) 創建兩個 namesapce 並 link 至 default namespace。
+- `sudo ip link set dev mydocker0 up`： 啟動 mydocker0 。
+- `sudo ip netns exec ns1 bash`: 進入 ns1 namespace。接著 ping 看看 ns2 的 IP 位址。
+
+![](./assets/66-add-ns-to-br.png)
+
 
 **Further Reading List**
 
