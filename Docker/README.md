@@ -918,6 +918,57 @@ Network Namespace 是 Linux 的一個功能，可以讓不同的 Process 使用�
 - [NAT - Network Address Translation](https://www.karlrupp.net/en/computer/nat_tutorial)
 - [What happens when you open a terminal and enter ‘ls’](https://www.warp.dev/blog/what-happens-when-you-open-a-terminal-and-enter-ls)
 
+# Docker Compose
+
+Docker Compose 是一個用來管理多個 Container 的工具。主要是用 yaml 檔案來定義要建立的 Container。
+
+## Yaml 基本語法
+
+```yaml
+version: "3.8" # yaml 檔案的版本
+
+services:
+  servicename: # 服務名稱。也是 Bridge Network 裡面的 DNS 名稱。
+    image:
+    command:
+    environment:
+    volumes:
+    networks:
+    ports:
+  servicename2:
+    image:
+    command:
+    environment:
+    volumes:
+    networks:
+    ports:
+
+volumes:
+networks:
+```
+
+## Docker Compose 基本指令
+
+下指令時，如果不指定 `-f` 選項，則會自動讀取目錄下的 `docker-compose.yml` 檔案。如果沒有在目錄下，則會報錯。
+
+`docker-compose up`: 建立並且執行 Container。
+
+`docker-compose up -d`: 建立並且執行 Container，且在背景執行。
+
+`docker-compose down`: 停止並且刪除 Container。
+
+`docker-compose ps`: 查看目前正在執行的 Container。
+
+`docker-compose logs`: 查看 Container 的 log。
+
+`docker-compose exec [Service Name] [Command]`: 在 Container 中執行指令。
+
+`docker-compose build`: 重新建立 Image。
+
+`docker-compose config`: 檢查 yaml 檔案的語法是否正確。
+
+
+
 # Other Tools
 
 - [Orbstack](https://orbstack.dev/)
