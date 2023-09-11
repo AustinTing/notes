@@ -7,3 +7,5 @@ sudo mkdir /var/log/aws-iot-device-client
 sudo chmod 745 /var/log/aws-iot-device-client
 sudo chown pi:pi /var/log/aws-iot-device-client
 ```
+
+# [Fundamentals of networking in AWS](https://medium.com/codenation-engineering/fundamentals-of-networking-in-aws-3ad3d0dc01dd)
