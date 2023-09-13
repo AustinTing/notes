@@ -41,4 +41,4 @@ describe('Testing description', () => {
 });
 ```
 
-
+要注意當使用這種方法時，mock 的模組有用到其他模組時，要將其他模組也一併 mock ，不然會出現錯誤。
