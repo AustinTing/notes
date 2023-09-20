@@ -11,6 +11,20 @@ docker container run --name mongodb \
 -d mongo:latest
 ```
 
+# Transaction
+
+transaction 是一種保證資料一致性的機制，可以確保資料庫的 ACID 特性。如果 transaction 中間發生錯誤，會自動 rollback，保證資料庫的一致性。
+
+在一次 transaction 過程中，操作有沒有帶入 session 會影響到操作的結果。例如：
+
+```ts
+XXModel.create([data], { session });
+XXModel.findOne({key: data.key}); // 無法找到 data
+XXXModel.findOne({key: data.key}).session(session); // 可以找到 data
+```
+
+
+
 ## 用遞回方式處理 DB concurrency 操作 Error 的問題
 
 以 TypeScript 為例，當錯誤發生時，會進入 catch 區塊，這時可以在 catch 區塊中再次呼叫自己，達到重新處理的效果。
@@ -197,3 +211,11 @@ db.collection.aggregate([
 ## 疑難雜症
 
 DB connect 時如果沒加 `srv` 有可能會出現 timeout 問題。
+
+使用 Mongoose 的 Model.create 時，如果要加 session，記得第一個參數要轉成 array。參考：[Model.create() not allowing me to pass SaveOptions as the second argument](https://github.com/Automattic/mongoose/issues/12877)
+
+```ts
+await Model.create([data], { session });
+```
+
+建議寫完程式後，檢查每個 MongoDB 的操作，評估是否要在 Model 建立相對應的 index 。
