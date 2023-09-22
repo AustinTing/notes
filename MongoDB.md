@@ -219,3 +219,10 @@ await Model.create([data], { session });
 ```
 
 建議寫完程式後，檢查每個 MongoDB 的操作，評估是否要在 Model 建立相對應的 index 。
+
+注意 bulkWrite 的 BulkWriteOptions 的結構，尤其是那個 key document 。
+
+```ts
+insertOne: {
+   document: { ...data },
+```
