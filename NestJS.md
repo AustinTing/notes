@@ -1,5 +1,30 @@
 # NestJS
 
+## 環境變數
+
+只要 module 有用到環境變數，就要在 `app.module.ts` 的 `@Module`裡面加入 `ConfigModule.forRoot()`。並且可以用 `Joi` 套件來驗證環境變數的格式。
+
+```typescript
+// XXX.module.ts
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid('test', 'local_dev', 'stage', 'production', 'stage')
+          .default('local_dev'),
+        PORT: Joi.number().default(6000),
+        MONGO_CONNECTION_STRING: Joi.string().required(),
+        MONGO_USR: Joi.string().required(),
+        MONGO_PASS: Joi.string().required(),
+         ],
+})
+export class XXXModule {}
+// ... 省略 ...
+```
+
 ## 測試
 
 ### Mock Database data
@@ -85,5 +110,10 @@ it('should update something', async () => {
 });
 ```
 
-```typescript
+## 臨時 Script
 
+如果要在執行一些臨時的 script ，可以用 `ts-node` 來執行。例如：
+
+```bash
+yarn ts-node ./src/scripts/XXX.ts
+```
