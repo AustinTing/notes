@@ -65,6 +65,7 @@ cat cu.usbmodem14201 & stty -f cu.usbmodem14201 9600
 ```
 fg
 ```
+
 開另一個 terminal 視窗，對它下指令，一開始下幾個enter
 
 ```
@@ -78,7 +79,6 @@ echo -ne "admin\n" > cu.usbmodem14201
 echo -ne "password\n" > cu.usbmodem14201
 ```
 
-```
 下 ifconfig
 
 ```
@@ -91,10 +91,12 @@ echo -ne "ifconfig\n" > cu.usbmodem14201
 
 ## Issues
 
-** ssh: Could not resolve hostname [Host]: nodename nor servname provided, or not known **
+**ssh: Could not resolve hostname [Host]: nodename nor servname provided, or not known**
 
 - 如果直接 ping HostName 有通，檢查 .ssh/config 是否有設定是否正確，是否有 typo。
 - `ssh -vvv [HostName]`: 查看 ssh 連線過程。如果有出現 `debug1: Connecting [Host] to host port 22.` 表示 ssh 設定檔可能有問題，備份 `.ssh/know_hosts` 後，刪除 `.ssh/know_hosts` 後再試試看。
+
+**如果要處理有關時間序的問題，像是上一筆和這一筆，要注意撈上一筆的資料不能單純撈最新的一筆，要再加上時間小於本筆的條件。**
 
 ## Web
 
