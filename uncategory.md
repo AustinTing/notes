@@ -134,6 +134,6 @@ or
 // 50 有時還是會換行
 <div style="display: flex;">
     <img src="" width="49%" />
-    <img src="https://github.com/CalyxInc/software-team/assets/84309449/fc4483da-de42-427f-a2f1-e087d6b75fc8" width="49%" />
+    <img src="" width="49%" />
 </div>
 ```
