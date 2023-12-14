@@ -210,19 +210,31 @@ db.collection.aggregate([
 
 ## 疑難雜症
 
-DB connect 時如果沒加 `srv` 有可能會出現 timeout 問題。
+- 更新 Object 裡的陣列時，save 之前要 markModified ，不然會無法更新。
 
-使用 Mongoose 的 Model.create 時，如果要加 session，記得第一個參數要轉成 array。參考：[Model.create() not allowing me to pass SaveOptions as the second argument](https://github.com/Automattic/mongoose/issues/12877)
+```ts
+const data = await Model.findOne({ _id: id });
+data.array.push(newData);
+data.markModified('array');
+await data.save();
+```
+
+- 如果同一個 query 程式跑的跟手動跑的結果不一樣，有可能是像 Mongoose 這種 ORM 的 Schema 沒有相對應的 key 。
+
+- DB connect 時如果沒加 `srv` 有可能會出現 timeout 問題。
+
+- 使用 Mongoose 的 Model.create 時，如果要加 session，記得第一個參數要轉成 array。參考：[Model.create() not allowing me to pass SaveOptions as the second argument](https://github.com/Automattic/mongoose/issues/12877)
 
 ```ts
 await Model.create([data], { session });
 ```
 
-建議寫完程式後，檢查每個 MongoDB 的操作，評估是否要在 Model 建立相對應的 index 。
+- 建議寫完程式後，檢查每個 MongoDB 的操作，評估是否要在 Model 建立相對應的 index 。
 
-注意 bulkWrite 的 BulkWriteOptions 的結構，尤其是那個 key document 。
+- 注意 bulkWrite 的 BulkWriteOptions 的結構，尤其是那個 key document 。
 
 ```ts
 insertOne: {
    document: { ...data },
 ```
+
