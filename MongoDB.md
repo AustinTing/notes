@@ -238,3 +238,5 @@ insertOne: {
    document: { ...data },
 ```
 
+- 儲存時想要達到 Idempotent ，除了利用 ID 檢查是否已經存在外，也可以利用 `Upsert` 來達到。
+
