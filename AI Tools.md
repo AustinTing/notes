@@ -110,3 +110,8 @@ console.log(phoneRegex.test('(02) 1234-5678'));
 
 Control + Enter 可以開啟更多解法的選擇
 
+
+## [Mr.Ranedeer AI Tutor](https://github.com/JushBJJ/Mr.-Ranedeer-AI-Tutor)
+
+利用 ChatGPT 建立系統性的客製化課程。
+
