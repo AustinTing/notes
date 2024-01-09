@@ -1,6 +1,10 @@
 # Uncategory
 
 
+## Mac
+
+- Mac terminal 完全清除已顯示的 log: `command` + k
+
 ## Linux  
 
 - `cat /proc/cpuinfo`: 列出硬體基本資訊  
@@ -102,6 +106,18 @@ echo -ne "ifconfig\n" > cu.usbmodem14201
 
 網頁切換頁面時，開啟 preserve log 可以儲存 request 紀錄。
 ![](assets/web-chrome-preserve-log.png)
+
+### CSS
+
+[樹狀視圖的 CSS 實現](https://iamkate.com/code/tree-views/)
+
+### Tailwind
+
+- [Headwind](https://marketplace.visualstudio.com/items?itemName=heybourn.headwind): 排序 tailwind 的 class 的 vscode plugin。
+
+- [Tailwind Docs](https://marketplace.visualstudio.com/items?itemName=austenc.tailwind-docs): 可以在 vscode 快速開啟 tailwind 文件網站。
+
+- [@tailwindcss/typography](https://tailwindcss.com/docs/typography-plugin): 讓文字內容有基礎的排版樣式。如果單純從資料庫中讀取一堆基礎 html 格式，可以使用這個。
 
 ## Drawio
 
