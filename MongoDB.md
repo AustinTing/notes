@@ -208,7 +208,9 @@ db.collection.aggregate([
 ])
 ```
 
-## 疑難雜症
+## 疑難雜症與技巧
+
+- 建議寫完程式後，檢查每個 MongoDB 的操作，評估是否要在 Schema 建立相對應的 index 。
 
 - 更新 Object 裡的陣列時，save 之前要 markModified ，不然會無法更新。
 
@@ -228,8 +230,6 @@ await data.save();
 ```ts
 await Model.create([data], { session });
 ```
-
-- 建議寫完程式後，檢查每個 MongoDB 的操作，評估是否要在 Model 建立相對應的 index 。
 
 - 注意 bulkWrite 的 BulkWriteOptions 的結構，尤其是那個 key document 。
 
