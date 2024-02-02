@@ -210,6 +210,12 @@ db.collection.aggregate([
 
 ## 疑難雜症與技巧
 
+- `_id` 通常是 ObjectId ，所以用 MongoDB API 時，要加上 `$oid` 。
+
+``js
+ "_id": { "$oid": "your_object_id_value" } 
+```
+
 - 建議寫完程式後，檢查每個 MongoDB 的操作，評估是否要在 Schema 建立相對應的 index 。
 
 - 更新 Object 裡的陣列時，save 之前要 markModified ，不然會無法更新。
