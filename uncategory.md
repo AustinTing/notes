@@ -11,7 +11,7 @@
 - `ls`
   - `-t`：依時間排序，而不是用檔名。
   - `-h`：將檔案容量以人類較易讀的方式(例如 GB, KB 等等)列出來。
-- `df -h`: 看空間大小  
+- `du -hd 1 . | sort -hr`: 看空間大小  
 - `lsb_release -a` or `/etc/os-release` or `Raspbian GNU/Linux 10 `: 查看 OS 發佈版。  
 - 套件管理  
   - APT（Advanced Packaging Tool）： Debian 和 Ubuntu。  
