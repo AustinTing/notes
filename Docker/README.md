@@ -69,7 +69,7 @@ Container 是 Image 的執行實例，且在多層 image 之上有 `read-write` 
 `docker container rm $(docker container ps -aq)`: 刪除所有 Container。
 - `-q` 或 `--quiet` 選項表示只顯示容器的短ID（Container ID），而不顯示其他詳細資訊。這將讓輸出更為簡潔。
 
-`docker system prune`: 刪除所有沒有使用的資源（包含 Container、Image、Network、Volume）。
+`docker system prune -f`: 刪除所有沒有使用的資源（包含 Container、Image、Network、Volume）。
 
 
 ## Attach and Detach Container
@@ -1020,6 +1020,8 @@ services:
 
 ## Docker Compose Network
 
+### Default Network
+
 利用 docker-compose.yml ，試著啟動兩個 Container：
 
 
@@ -1075,6 +1077,7 @@ b16b9ae4eada   docker-compose_default   bridge    local
 
     ...
 ]
+```
 
 進到其中一個 container 內，可以藉由 container name 或是 service name 來 ping 另一個 container。這是因為 docker 有自己的 DNS server ，會將 container name 轉換成 container 的 IP 位址。
 
@@ -1139,12 +1142,108 @@ box2.			600	IN	A	172.18.0.3
 
 容器會先找自己的 DNS server，如果找不到，就會找主機的 DNS server。
 
+### 自定義 Network
 
+可以在 `docker-compose.yml` 檔案中，使用 `networks` 選項，來建立自定義 Network。
 
+```yaml
+version: "3.8"
 
+services:
+  box1:
+    image: xiaopeng163/net-box:latest
+    command: /bin/sh -c "while true; do sleep 3600; done"
+    networks:
+      - mynetwork1
+  box2:
+    image: xiaopeng163/net-box:latest
+    command: /bin/sh -c "while true; do sleep 3600; done"
+    networks:
+      - mynetwork1
+      - mynetwork2
 
+networks:
+  mynetwork1:
+  mynetwork2:
+```
+
+啟動 Container 時，會自動建立 `mynetwork1` 和 `mynetwork2` 兩個 Network。這兩個 Network 會使用 default 的 network driver。
 
 ```bash
+$ docker-compose up -d
+[+] Running 4/4
+ ✔ Network docker-compose_mynetwork1  Created                                                                           0.0s 
+ ✔ Network docker-compose_mynetwork2  Created                                                                           0.0s 
+ ✔ Container docker-compose-box1-1    Started                                                                          10.3s 
+ ✔ Container docker-compose-box2-1    Started                                                                          10.3s
+```
+
+Default 是指根據環境決定使用哪種 driver。如果是單機的情況，則會使用 bridge driver。
+
+```bash
+$ docker network ls
+NETWORK ID     NAME                        DRIVER    SCOPE
+660539460bdc   bridge                      bridge    local
+b16b9ae4eada   docker-compose_default      bridge    local
+70aad70e0c24   docker-compose_mynetwork1   bridge    local
+5c430db865ba   docker-compose_mynetwork2   bridge    local
+500c7c21915e   host                        host      local
+04809e70c261   none                        null      local
+```
+
+### 自定義 Network 的設定
+
+官方文檔有很多關於自定義 Network 的設定，像是 subnet、gateway 等等。
+
+```yaml
+version: "3.8"
+
+services:
+  box1:
+    image: xiaopeng163/net-box:latest
+    command: /bin/sh -c "while true; do sleep 3600; done"
+    networks:
+      - mynetwork1
+  box2:
+    image: xiaopeng163/net-box:latest
+    command: /bin/sh -c "while true; do sleep 3600; done"
+    networks:
+      - mynetwork1
+      - mynetwork2
+
+networks:
+    mynetwork1:
+        ipam:
+            driver: default
+            config:
+                - subnet: "172.16.238.0/24"
+    mynetwork2:
+        ipam:
+            driver: default
+```
+
+`ipam` 是 IP Address Management 的縮寫，可以設定 subnet、gateway 等等。重啟後，可以進入 Container 確認 IP 位址在 yaml 檔案中設定的 subnet 中。
+
+```bash
+$ docker-compose up -d`
+$ docker container exec -it docker-compose-box1-1 sh
+/omd # ifconfig
+eth0      Link encap:Ethernet  HWaddr 02:42:AC:10:EE:03  
+          inet addr:172.16.238.3  Bcast:172.16.238.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:15 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:1306 (1.2 KiB)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+```
 
 
 
