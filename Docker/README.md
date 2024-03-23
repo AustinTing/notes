@@ -172,7 +172,7 @@ CMD [Command]
 3. `ADD`: 將檔案複製到 Image 中。（準備程式）
 4. `CMD`: 執行程式。
 
-## 裡用 Dockerfile 建立 Image
+## 用 Dockerfile 建立 Image
 
 `docker image build -t [Image Name] [Dockerfile Path]`: 建立 Image。
 - 執行 `FROM`、`RUN`、`ADD` 以建立 Image。
@@ -947,6 +947,9 @@ volumes:
 networks:
 ```
 
+
+
+
 ## Docker Compose 基本指令
 
 下指令時，如果不指定 `-f` 選項，則會自動讀取目錄下的 `docker-compose.yml` 檔案。如果沒有在目錄下，則會報錯。
@@ -954,6 +957,8 @@ networks:
 `docker-compose up`: 建立並且執行 Container。
 
 `docker-compose up -d`: 建立並且執行 Container，且在背景執行。
+
+- 如果在背景執行有想看 log，可以用 `docker-compose logs` 指令或是 `docker-compose logs -f` 指令。
 
 `docker-compose down`: 停止並且刪除 Container。
 
@@ -966,6 +971,183 @@ networks:
 `docker-compose build`: 重新建立 Image。
 
 `docker-compose config`: 檢查 yaml 檔案的語法是否正確。
+
+## Build Docker Image with Docker Compose
+
+可以在 `docker-compose.yml` 檔案中，使用 `build` 選項，來建立本地 Image。
+
+docker-compose 會預設查找 build 路徑下的 Dockerfile。
+
+```yaml
+version: "3.8"
+
+services:
+  flask-demo:
+    build: ./flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+    environment:
+      FLASK_ENV: development
+```
+
+也可以指定 Dockerfile 的路徑：
+
+```yaml
+version: "3.8"
+
+services:
+  flask-demo:
+    build:
+      context: ./flask
+      dockerfile: Dockerfile.XXX
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+    environment:
+      FLASK_ENV: development
+```
+
+## 更新容器
+
+ `docker-compose up -d --build`：啟動容器。重複執行此指令時，Docker 檢查是否要更新或建立 Image，再將 Container 停止並且重新建立。如果 Image 存在且沒有更新，則不會重新建立 Container。
+
+`docker-compose up -d --remove-orphans`：啟動時如果發現有 orphan container(現有 Container 不在 docker-compose.yml 中)，則會刪除。
+
+`docker-compose restart`: 重新啟動現有 Container，不會檢查是否有需更新或建立 Image，單純只是重新啟動 Container。
+
+## Docker Compose Network
+
+利用 docker-compose.yml ，試著啟動兩個 Container：
+
+
+```
+~/learn-docker/docker-compose$ docker-compose up -d
+```
+
+```yaml
+version: "3.8"
+
+services:
+  box1:
+    image: xiaopeng163/net-box:latest
+    command: /bin/sh -c "while true; do sleep 3600; done"
+
+  box2:
+    image: xiaopeng163/net-box:latest
+    command: /bin/sh -c "while true; do sleep 3600; done"
+```
+
+會發現 docker 會自動為這兩個 containers 創立一個新的 Network，命名是專案**名稱**加**下底線**加上 default 。
+
+```bash
+~/learn-docker/docker-compose$ docker network list
+NETWORK ID     NAME                     DRIVER    SCOPE
+660539460bdc   bridge                   bridge    local
+b16b9ae4eada   docker-compose_default   bridge    local
+500c7c21915e   host                     host      local
+04809e70c261   none                     null      local
+```
+
+`docker network inspect docker-compose_default` 可以查看這個 network 所連接的 Containers ，以及各 container 的 IP 位址。
+
+```bash
+[
+    ...
+    "Containers": {
+            "205c36b7d41bcebb511f657d4707f3157cea04d532f568e28038b683b7dd04a5": {
+                "Name": "docker-compose-box2-1",
+                "EndpointID": "24d44076a4550a5d13bd160620db61157b6ae1aeb74839058aa5b6c2cad9a958",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            },
+            "bf65cb8f0af823a9581d55b0bb37a0bf215121e89d90818e699df20e40c6e321": {
+                "Name": "docker-compose-box1-1",
+                "EndpointID": "6b2e579b4c649969f663b54d715ae6adc4bcb65ac85dcd456ede4dba46a548e8",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+
+    ...
+]
+
+進到其中一個 container 內，可以藉由 container name 或是 service name 來 ping 另一個 container。這是因為 docker 有自己的 DNS server ，會將 container name 轉換成 container 的 IP 位址。
+
+```bash
+# 查看 container  
+$ docker-compose ps
+NAME                    IMAGE                        COMMAND                  SERVICE             CREATED             STATUS              PORTS
+docker-compose-box1-1   xiaopeng163/net-box:latest   "/bin/sh -c 'while t…"   box1                17 minutes ago      Up 3 minutes        
+docker-compose-box2-1   xiaopeng163/net-box:latest   "/bin/sh -c 'while t…"   box2                17 minutes ago      Up 3 minutes        
+
+# 進入其中一個 container
+$ docker container exec -it docker-compose-box1-1 sh
+
+/omd # ping docker-compose-box2-1
+PING docker-compose-box2-1 (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.824 ms
+64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.234 ms
+64 bytes from 172.18.0.3: seq=2 ttl=64 time=0.156 ms
+^C
+--- docker-compose-box2-1 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 0.156/0.404/0.824 ms
+
+/omd # ping box2
+PING box2 (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.369 ms
+64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.381 ms
+64 bytes from 172.18.0.3: seq=2 ttl=64 time=0.139 ms
+^C
+--- box2 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 0.139/0.296/0.381 ms
+```
+
+利用 `dig` 指令，可以查看 container name 轉換成 IP 位址的過程。其中 127.0.0.11 是 docker 的 DNS server。
+
+```bash
+$ docker container exec -it docker-compose-box1-1 sh
+/omd # dig box2
+
+; <<>> DiG 9.18.10 <<>> box2
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 37759
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;box2.				IN	A
+
+;; ANSWER SECTION:
+box2.			600	IN	A	172.18.0.3
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.11#53(127.0.0.11) (UDP)
+;; WHEN: Sat Mar 23 10:47:08 UTC 2024
+;; MSG SIZE  rcvd: 42
+```
+
+如果在容器外，可以 ping Docker 的 DNS server，但是 ping 不到 container name(ex: box1)，只能 ping container 的 IP 位址。
+
+這是因為主機的 DNS server 不是 Docker 的 DNS server，所以不知道 container name 要轉換成什麼 IP 位址。可以藉由查看 `/etc/resolv.conf` 來查看容器或主機的 DNS server 設定。
+
+容器會先找自己的 DNS server，如果找不到，就會找主機的 DNS server。
+
+
+
+
+
+
+```bash
+
+
+
 
 
 
