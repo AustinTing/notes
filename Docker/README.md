@@ -1245,15 +1245,22 @@ lo        Link encap:Local Loopback
           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
 ```
 
+### 水平擴展與負載平衡
 
+啟動 `docker-compose.yml` 時，可以指定特定 service 的數量。
 
-
-
+```bash
+$ docker-compose up -d --scale box1=3
+```
 
 # Other Tools
 
 - [Orbstack](https://orbstack.dev/)
     - Mac 上 Docker Desktop 的替代品。
 
+# 疑難雜症
 
+## Docker 網路問題
+
+- 如果 image 可以 pull 下來，但是 container 內無法連網，有可能是 DNS 的問題。可以試著在 `/etc/docker/daemon.json` 強制指定 DNS server。
 
