@@ -1386,11 +1386,13 @@ services:
 ```
 
 
+# Resource
 
-# Other Tools
+- [example-voting-app](https://github.com/dockersamples/example-voting-app): 非常好的 docker compose, Dockerfile 學習範例。裡面有很多服務，像是 Redis、Postgres、Python、Node.js 等等。
 
-- [Orbstack](https://orbstack.dev/)
-    - Mac 上 Docker Desktop 的替代品。
+- [awesome-compose](https://github.com/docker/awesome-compose): 一個收集了很多 Docker Compose 的範例的 repo。
+
+- [Orbstack](https://orbstack.dev/): Mac 上 Docker Desktop 的替代品。
 
 # 疑難雜症
 
