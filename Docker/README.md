@@ -942,6 +942,7 @@ services:
     volumes:
     networks:
     ports:
+    depends_on: # 依賴的服務名稱。會等到依賴的服務啟動後，才會啟動這個服務。
 
 volumes:
 networks:
@@ -1245,13 +1246,146 @@ lo        Link encap:Local Loopback
           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
 ```
 
-### 水平擴展與負載平衡
+## 水平擴展與負載平衡
 
 啟動 `docker-compose.yml` 時，可以指定特定 service 的數量。
 
 ```bash
-$ docker-compose up -d --scale box1=3
+$ docker-compose up -d --scale flask=3
+compose-scale-example-1_client_1 is up-to-date
+compose-scale-example-1_redis-server_1 is up-to-date
+Creating compose-scale-example-1_flask_2 ... done
+Creating compose-scale-example-1_flask_3 ... done
 ```
+
+每次收到 request 時，Docker 會自動將 request 分配到不同的 Container。如果再加一個 nginx 來做負載平衡，就可以實現水平擴展。另外，可以把 nginx 的 log 寫回 host 的 disk，這樣就可以查看 log。
+
+```yaml
+version: "3.8"
+
+services:
+  flask:
+    build:
+      context: ./flask
+      dockerfile: Dockerfile
+    image: flask-demo:latest
+    environment:
+      - REDIS_HOST=redis-server
+    networks:
+      - backend
+      - frontend
+
+  redis-server:
+    image: redis:latest
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - 8000:80
+    depends_on:
+      - flask
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./var/log/nginx:/var/log/nginx
+    networks:
+      - frontend
+
+networks:
+  backend:
+  frontend:
+```
+
+## 環境變數
+
+在 `docker-compose.yml` 檔案中，可以使用 `environment` 選項，來設定 Container 的環境變數。
+
+```yaml
+services:
+  xxxService:
+    ...
+    environment:
+      - REDIS_PASSWORD=1234
+```
+
+但這樣會將密碼寫在明文中，不安全。可以使用讀取外部環境變數的方式，來設定環境變數。
+
+```yaml
+services:
+  xxxService:
+    ...
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+```
+
+Docker Compose 會自動讀取與 `docker-compose.yml` 相同目錄的 `.env` 檔案，並且將裡面的環境變數設定到 Container 中。可以使用 `docker-compose config` 指令來預覽 yaml。
+
+另外，也可以使用 `--env-file` 選項，來指定讀取的環境變數檔案。
+
+```bash
+$ docker-compose --env-file .xxxenv config
+$ docker-compose --env-file .xxxenv up -d
+```
+
+## 服務依賴及 Health Check
+
+在 `docker-compose.yml` 檔案中，可以使用 `depends_on` 選項，來設定服務之間的依賴關係。
+
+```yaml
+services:
+  xxxService:
+    ...
+    depends_on:
+      - yyyService # 代表 xxxService 依賴 yyyService
+```
+
+但是 `depends_on` 只是代表啟動順序，並不代表服務是否已經啟動完成。如果要確保服務已經啟動完成，可以使用 Health Check。
+
+Heath Check 可以在 `docker-compose.yml` 或是 Dockerfile 中設定。
+
+Health check in Dockerfile: 
+
+```dockerfile
+# 要注意不一定每個 image 都有 curl 所以要先安裝
+# RUN apt-get update && apt-get install -y curl
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:5000/ || exit 1
+```
+
+
+可以利用 `docker inspect` 指令，查看 Container 的 Health Check 狀態。
+
+```bash
+$ docker inspect --format='{{json .State.Health}}' container_name
+{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2022-03-23T11:00:00.000000000Z","End":"2022-03-23T11:00:00.000000000Z","ExitCode":0,"Output":"http://localhost:5000/ is healthy\n"}]}
+```
+
+Health check in docker-compose.yml: 
+
+```yaml
+services:
+  xxxService:
+    ...
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3 # 失敗時重試次數，如果超過次數則 Container 會被標記為 unhealthy
+```
+
+如果要讓服務再確認另一個服務的正常運作後再啟動，可以使用 `depends_on` 搭配 `healthcheck` 。
+
+```yaml
+services:
+  xxxService:
+    ...
+    depends_on:
+      yyyService:
+        condition: service_healthy # 可以根據服務依賴的需求狀態來啟動服務
+```
+
+
 
 # Other Tools
 
