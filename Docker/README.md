@@ -1384,11 +1384,37 @@ services:
       yyyService:
         condition: service_healthy # 可以根據服務依賴的需求狀態來啟動服務
 ```
+# Podman
+
+Podman 是一個可以替代 Docker 的容器引擎，由 Red Hat 按照 OCI 標準開發。
+
+Podman 與 Docker 的幾個差異：
+
+- Podman 是 Daemonless 的，而 Docker 運行時是需要 Daemon 的。
+- Podman 可以不用在 root 模式下運行，相比 Docker 更安全。
+- Podman 可以創建 Pod，而 Docker 不支援 Pod。
+- Podman 可以將 image 和 container 存在不同地方，而 Docker 需要在同一個地方（Docker engine）。
+- Podman 是傳統 fork-exec 模型，而 Docker 是 client-server 模型。
+
+Docker 與 Podman 架構比較
+
+<div style="display: flex;">
+    <div style="width: 49%; margin-right: 2%;">
+        <img src="./assets/98-docker-architecture-diagram.png" style="width: 100%;" />
+    </div>
+    <div style="width: 49%;">
+        <img src="./assets/98-podman-architecture-diagram.png" style="width: 100%;" />
+    </div>
+</div>
+
+<center>圖片來源：<a href=https://dockertips.readthedocs.io/en/latest/docker-podman/podman-intro.html>Podman 介绍</a></center>
+
+延升閱讀：[Battle of Containerization Titans: Podman vs. Docker](https://www.codica.com/blog/podman-vs-docker/)
 
 
 # Resource
 
-- [example-voting-app](https://github.com/dockersamples/example-voting-app): 非常好的 docker compose, Dockerfile 學習範例。裡面有很多服務，像是 Redis、Postgres、Python、Node.js 等等。
+- [example-voting-app](https://github.com/dockersamples/example-voting-app): 非常好的 docker compose, Dockerfile 學習範例。裡面有很多服務，像是 Redis、Postgres、Python、Node.js 等等。 
 
 - [awesome-compose](https://github.com/docker/awesome-compose): 一個收集了很多 Docker Compose 的範例的 repo。
 
