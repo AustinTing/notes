@@ -1386,6 +1386,8 @@ services:
 ```
 # Podman
 
+## Podman 簡介
+
 Podman 是一個可以替代 Docker 的容器引擎，由 Red Hat 按照 OCI 標準開發。
 
 Podman 與 Docker 的幾個差異：
@@ -1410,6 +1412,22 @@ Docker 與 Podman 架構比較
 <center>圖片來源：<a href=https://dockertips.readthedocs.io/en/latest/docker-podman/podman-intro.html>Podman 介绍</a></center>
 
 延升閱讀：[Battle of Containerization Titans: Podman vs. Docker](https://www.codica.com/blog/podman-vs-docker/)
+
+## 基礎指令
+
+`podman --help`: 查看所有指令。
+
+`podman search [image]`: 搜尋 quay.io 或是 Docker Hub 上的 image。
+
+`podman pull [image]`: 下載 image， image 要寫完整名稱 (ex: `docker.io/library/alpine:latest`)。
+
+`podman image ls`: 查看本地的 image。
+
+`podman run [image]`: 執行 image。
+
+`podman container ls`: 查看正在運行的 container。
+
+`podman container stop [container]`: 停止 container。
 
 
 # Resource
