@@ -1413,6 +1413,10 @@ Docker 與 Podman 架構比較
 
 延升閱讀：[Battle of Containerization Titans: Podman vs. Docker](https://www.codica.com/blog/podman-vs-docker/)
 
+Docker 與 Podman 的操作上的差異
+
+- 不同使用者使用 podman 時，會看不到對方的 的 image 和 container。
+
 ## 基礎指令
 
 `podman --help`: 查看所有指令。
@@ -1428,6 +1432,22 @@ Docker 與 Podman 架構比較
 `podman container ls`: 查看正在運行的 container。
 
 `podman container stop [container]`: 停止 container。
+
+`podman logs [container]`: 查看 container 的 log。
+
+`podman top [container]`: 查看 container 的 process。
+
+# Pod
+
+Podman 可以創建 Pod，Pod 是一個或多個 container 的集合，這些 container 共享網路和存儲空間。可以想成是一種 docker-compose 的替代方案。
+
+`podman pod create --name mypod`: 創建一個 Pod。
+
+`podman ps -a --pod`: 查看 Pod 中的 container。
+
+`podman container run -d --name [container_name] --pod [pod_name] busybox`: 創建一個 busy container 並加入 Pod。
+
+
 
 
 # Resource
