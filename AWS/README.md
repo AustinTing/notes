@@ -9,3 +9,12 @@ sudo chown pi:pi /var/log/aws-iot-device-client
 ```
 
 # [Fundamentals of networking in AWS](https://medium.com/codenation-engineering/fundamentals-of-networking-in-aws-3ad3d0dc01dd)
+
+
+
+# Others
+Lambda
+- stack name 是資源的集合，要特別注意名稱不要重複。特別是開專案的時候
+
+[用 `iostat` 檢查設備狀況](https://github.com/penglongli/blog/issues/74)
+- 如果是部屬在他人的 server 上，可以查看 `%steal`。如果 `%steal` 高，代表 CPU 被其他人的 VM 佔用了。
