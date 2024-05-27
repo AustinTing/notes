@@ -158,5 +158,22 @@ Kafka 中的 transaction API，使用起來就像一般 DB 的 transaction 一�
 
 - 總是要設想 message 有可能會有沒有 key 的情況。
 
+- 如果想提高 application 的處理資料的速度，可以使用 batch 處理，並調高 partitionsConsumedConcurrently 。
+
+> 設定 partitionsConsumedConcurrently 的一個指導原則是它不應該大於消費的分區數量。根據您的工作負載是否受 CPU 限制，將其設置為高於邏輯 CPU 核心數量也可能沒有益處。建議從較低的數值開始，並測量增加是否會導致更高的吞吐量。 from: [Partition-aware concurrency](https://kafka.js.org/docs/consuming#a-name-concurrent-processing-a-partition-aware-concurrency)
+
+```javascript
+await this.consumer.run({
+  // ...
+  partitionsConsumedConcurrently: 3,
+  eachBatch: async (payload: EachBatchPayload) => {
+    // 處理來自每個分區的批次資料
+    console.log(`Processing batch from partition: ${payload.batch.partition}`);
+    // ... 處理邏輯
+  }
+});
+```
+
+
 
 
