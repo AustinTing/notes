@@ -1445,7 +1445,30 @@ Podman 可以創建 Pod，Pod 是一個或多個 container 的集合，這些 co
 
 `podman ps -a --pod`: 查看 Pod 中的 container。
 
-`podman container run -d --name [container_name] --pod [pod_name] busybox`: 創建一個 busy container 並加入 Pod。
+`podman container run -d --name [container_name] --pod [pod_name] busybox ping 8.8.8.8`: 創建一個 busy container 並加入 Pod。(不過測試時後遇到沒有權限 ping 的問題，改成 `podman container run -d --name busybox2 --pod pod1 --cap-add=NET_RAW docker.io/library/busybox ping 8.8.8.8`）
+
+
+# 多架構建構
+
+## 簡介
+
+Docker 可以建立多架構的 Image，可以在同一個 Dockerfile 中建立多個架構的 Image。
+
+`docker impage inspect [Image Name]`: 可以查看 Image 的架構。
+
+```bash
+$ docker image inspect --format='{{.Architecture}}' busybox #  --format 是 Go 語言的模板語法
+arm64
+```
+
+要注意不是每個 Image 都有多架構的 Image。
+
+Docker 在 image pull 的時候，不會限制使用者只能下載本機架構的 image ，但如果使用者用不同架構的 image 建立 container 時，可能會遇到問題。
+
+如果有 Dockerfile 可以嘗試在本機 build 屬於自己架構的 image。 Build 的時候不用特別指定架構，Docker 會自動選擇本機架構。
+
+但要注意，如果 build 完直接 push ，則會將本機架構的 image push 到 Docker Hub，如果之前有其他架構的 image，則會被覆蓋。
+
 
 
 
