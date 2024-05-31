@@ -38,3 +38,36 @@ DNAT 有一種特殊的情況就是 `REDIRECT`，Packets 會被送到 Router 的
 ### 參考資料
 
 - [NAT - Network Address Translation](https://www.karlrupp.net/en/computer/nat_tutorial)
+
+
+# Issues
+
+## 掃描內網裝置
+
+掃描 IP 範圍內的裝置：
+
+```
+nmap -sP 192.168.1.0/24
+```
+
+列出有開啟 22 port 的裝置：
+
+```
+nmap -p 22 --open -sV
+```
+
+進一步查看特定 IP 的裝置資訊
+
+```
+nmap -A [IP]
+```
+
+測下載網速，可以用所花的時間去推算網速。 Dload 361 是指下載了 361 bytes / sec。
+
+```
+# curl -o /dev/null -w "%{time_total}\n" https://fast.com/1MB
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  4006  100  4006    0     0    361      0  0:00:11  0:00:11 --:--:--  1037
+11.072644
+```
