@@ -1523,6 +1523,15 @@ CMD []
 - `TERRAFORM_VERSION` 是自己設定的環境變數。
 
 
+# CI/CD
+
+## Docker Hub
+
+Docker Hub 可以設定自動 build，當 Github 上的專案的特定 branch 有新的 commit 時，Docker Hub 會自動 build 新的 image。
+## [Github Actions](https://github.com/skills/hello-github-actions)
+
+互動式學習網站，可以學習 Github Actions 的基本用法。
+
 
 
 
