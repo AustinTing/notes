@@ -1469,6 +1469,60 @@ Docker 在 image pull 的時候，不會限制使用者只能下載本機架構�
 
 但要注意，如果 build 完直接 push ，則會將本機架構的 image push 到 Docker Hub，如果之前有其他架構的 image，則會被覆蓋。
 
+# 使用 buildx 建立多架構 Image
+
+可以利用 buildx 在同一個機器上建立多架構的 Image。
+
+查看目前的 builder，預設是有星號的 multi-arch builder。
+
+```bash
+$ docker buildx ls      
+NAME/NODE       DRIVER/ENDPOINT             STATUS   PLATFORMS
+multi-arch *    docker-container                     
+  multi-arch0   unix:///var/run/docker.sock inactive 
+desktop-linux   docker                               
+  desktop-linux desktop-linux               running  linux/arm64, linux/amd64, linux/riscv64, linux/ppc64le, linux/s390x, linux/386, linux/arm/v7, linux/arm/v6
+default         docker                               
+  default       default                     running  linux/arm64, linux/amd64, linux/riscv64, linux/ppc64le, linux/s390x, linux/386, linux/arm/v7, linux/arm/v6
+```
+
+如果沒有 multi-arch 的 builder，可以創建一個：
+
+```bash
+$ docker buildx create --name mybuilder --use # 創建一個名為 mybuilder 的 builder，並且使用它
+```
+
+接著就可以使用 `docker buildx build` 指令來建立多架構的 Image。
+
+```bash
+$ docker buildx build --platform linux/amd64,linux/arm64 -t xiaopeng163/multi-arch-demo:latest .
+```
+
+- Docker 會去拉取一個 moby/buildkit 的 image，並創建屬於這個架構的環境構建 image。
+
+因為構建時，可能會需要拉取不同的 image name (XXX_linux_arm64, XXX_linux_amd64)，所以需要在 Dockerfile 中使用 `ARG` 來設定 image name。
+
+```dockerfile
+FROM alpine:3.16
+
+ARG TARGETARCH=amd64 TERRAFORM_VERSION="1.2.9"
+
+RUN apk update && apk add --no-cache curl
+
+RUN curl \
+    --location \
+    --output /tmp/terraform.zip \
+    https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${TARGETARCH}.zip \
+    && unzip /tmp/terraform.zip -d /usr/local/bin \
+    && rm -rf /tmp/terraform.zip
+
+CMD []
+```
+
+- `TARGETARCH` 是 buildx 自動設定的環境變數，可以用來判斷目前的架構。
+- `TERRAFORM_VERSION` 是自己設定的環境變數。
+
+
 
 
 
