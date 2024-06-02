@@ -7,6 +7,7 @@
 
 ## Linux  
 
+- `grep -r "string" .`: 在目前目錄下搜尋含有此字串的檔案。
 - `cat /proc/cpuinfo`: 列出硬體基本資訊  
 - `ls`
   - `-t`：依時間排序，而不是用檔名。
@@ -152,4 +153,22 @@ or
     <img src="" width="49%" />
     <img src="" width="49%" />
 </div>
+
+<div style="display: flex;">
+    <div style="width: 49%; margin-right: 2%;">
+        <img src="your-image-1.jpg" style="width: 100%;" />
+        <p>圖片一的說明文字</p>
+    </div>
+    <div style="width: 49%;">
+        <img src="your-image-2.jpg" style="width: 100%;" />
+        <p>圖片二的說明文字</p>
+    </div>
+</div>
 ```
+
+# Code Review
+
+- 檢查服務用到的 query 是否有 index，如果沒有，要加上。如果有，檢查是否有沒用到的 index，要移除。
+- 檢查是否有不必要的 log，或是 log 過多的地方。
+- 檢查啟動時的設定檔，建議每個設定參數都是必填，啟動時檢查設定檔，有缺少時，就要立刻報錯。這樣部屬的當下就知道設定檔有問題。
+- 檢查文檔是否過時。
