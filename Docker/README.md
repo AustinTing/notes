@@ -1532,6 +1532,55 @@ Docker Hub 可以設定自動 build，當 Github 上的專案的特定 branch �
 
 互動式學習網站，可以學習 Github Actions 的基本用法。
 
+### 利用 Github Actions 自動 build Docker Image
+
+在 Github 專案的 `.github/workflows` 目錄下，創建一個 yaml 檔案，可以設定 Github Actions 的流程。
+
+build 完後，可以 push 到 Docker Hub。 用 Github Secrets 來存放 Docker Hub 的 access token。
+
+因自己寫 docker build 可能會遇到一些問題。所以可以去 [Github MarketPlace](https://github.com/marketplace?query=docker+build)找一些現成的 action，像是[Build and push Docker images](https://github.com/marketplace/actions/build-and-push-docker-images)。
+
+Build and push Docker images 基本範本
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: austinting/test-github-action:latest
+```
+
+# 容器的安全
+
+
+
+
+
 
 
 
