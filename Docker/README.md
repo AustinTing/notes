@@ -1577,11 +1577,42 @@ jobs:
 
 # 容器的安全
 
+因 app 運行時是從 host -> container -> image(base image -> your app) 一路執行，中間各階段都要注意安全性。
 
+## Docker 運行環境檢查
 
+[Docker Bench for Security](https://github.com/docker/docker-bench-security) 可以檢查 Docker 環境的安全性。
 
+也可以利用此工具在意的項目，來學習 Docker 在安全性需要注意的地方。
 
+## App 和 Image 的安全性
 
+CVE(Common Vulnerabilities and Exposures) 是一個公開的漏洞資料庫，許多安全性工具都會使用這個資料庫當作檢查出漏洞的依據。
+
+[Snyk](https://snyk.io/) 和 [Trivy](https://github.com/aquasecurity/trivy) 都是可以靜態檢查安全性的工具。
+
+## Build Image 時的安全性
+
+如果把機敏訊息寫在 Dockerfile 中，可能會被暴露出去。如果是使用傳入參數 ARG 的方法，則其他人如果去查看 image history，也有機會看到機敏訊息。有兩種可以解決這個問題的方法：
+
+1. 用 multi-stage build，將機敏訊息用 ARG 傳入至一個 stage，然後在第二個 stage COPY 上一個 stage 的結果來使用。這樣在 image history 中就看不到機敏訊息。
+
+2. 使用 Docker secret，將機敏訊息存放在 secret 中，然後在 build 時用 `--secret` 選項來傳入 secret。
+
+```dockerfile
+...
+RUN --mount=type=secret,id=mysecret $(cat /run/secrets/mysecret) # $(...) 就可以拿到 secret 的內容。 mount 默認位置是 /run/secrets 
+...
+```
+
+Image history 也只顯示如下：
+
+```bash
+$ docker image history my-image
+...
+... RUN --mount=type=secret,id=mysecret $(cat /run/secrets/mysecret)
+...
+```
 
 
 
