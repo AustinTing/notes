@@ -196,6 +196,14 @@ CMD [Command]
 
 `docker container commit [Container ID] [Image Name]`: 將 Container 儲存成 Image。
 
+## 補充
+
+### [Understanding Container Image Layers](https://www.kenmuse.com/blog/understanding-container-image-layers/)
+
+Layer 可以想成是一個資料夾的概念，building 時，會從上一層的 Layer 裡的資料複製到下一層的 Layer。
+
+Image 是由多個 Layer 組成。 Docker 下載 Image 時，是一層一層 layer 下載，並且在下載前會檢查本地是否有相同的 layer，如果有，就重複使用，不再下載。
+
 # Dockerfile
 
 [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
