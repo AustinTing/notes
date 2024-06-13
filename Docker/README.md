@@ -1477,7 +1477,7 @@ Docker 在 image pull 的時候，不會限制使用者只能下載本機架構�
 
 但要注意，如果 build 完直接 push ，則會將本機架構的 image push 到 Docker Hub，如果之前有其他架構的 image，則會被覆蓋。
 
-# 使用 buildx 建立多架構 Image
+## 使用 buildx 建立多架構 Image
 
 可以利用 buildx 在同一個機器上建立多架構的 Image。
 
