@@ -43,6 +43,8 @@
 - [開機自動執行](https://blog.twshop.asia/ubuntu-18-04-%E9%96%8B%E6%A9%9F%E8%87%AA%E5%8B%95%E5%9F%B7%E8%A1%8C%E7%A8%8B%E5%BC%8F/)
 - [使用 systemd 避免複雜性](https://mgdm.net/weblog/systemd/): 如何使用 systemd 架設一個開機啟動的網站。
 
+- `~.`: [關閉無效的 SSH 連線](https://davidisaksson.dev/posts/closing-stale-ssh-connections/)，輸入前多加點 enter。
+
 ## 連線至 gateway
 
 Mac 下載 Coolterm ，然後將 mac 與 gateway 接 USB。
