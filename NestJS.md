@@ -129,8 +129,8 @@ Mongo 的 Discriminator 可以讓一個 collection 中，儲存不同 schema 的
 }) 
 export class device {
  @Prop({
-    type: mongoose.Schema.Types.String,
-    enum: $enum(DeviceTypeEnum).getKeys(),
+    type: mongoose.Schema.Types.String, // 要指定 type 為 String，不然會出錯
+    enum: $enum(DeviceTypeEnum).getKeys(), // 用 enum 來限制 type 的值
   })
   type: DeviceTypeEnum; // device 種類
 
