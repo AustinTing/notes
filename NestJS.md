@@ -226,6 +226,9 @@ export class DeviceService {
 
 # Others
 
+- Winston log: 如果用 object 的方式寫 log，要注意 key timestamp 是參數之一，不要用這個 key 來當作 log 的 timestamp。這個參數會去改變 log 的 timestamp。
+
+
 ## 臨時 Script
 
 如果要在執行一些臨時的 script ，可以用 `ts-node` 來執行。例如：
@@ -233,5 +236,4 @@ export class DeviceService {
 ```bash
 yarn ts-node ./src/scripts/XXX.ts
 ```
-
 
