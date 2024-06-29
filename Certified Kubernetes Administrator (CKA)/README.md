@@ -26,3 +26,7 @@ Cluster 是指一組由 kubernetes 管理的計算、儲存、網路資源，這
 - Kubelet：負責管理 Pod。
 - Kube-proxy：負責網路代理。
 - Container Runtime Engine：執行 container。
+
+## Docker vs Containerd
+
+早期 Kubernetes 使用 Docker 作為 container runtime engine，但是自從 1.20 版本開始，Kubernetes 開始支援 containerd。
