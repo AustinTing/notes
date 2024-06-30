@@ -29,4 +29,10 @@ Cluster 是指一組由 kubernetes 管理的計算、儲存、網路資源，這
 
 ## Docker vs Containerd
 
-早期 Kubernetes 使用 Docker 作為 container runtime engine，但是自從 1.20 版本開始，Kubernetes 開始支援 containerd。
+早期 Kubernetes 使用 Docker 作為 container runtime engine，之後 Kubernetes 為了支援其他 conttainer runtime，開發了 CRI（Container Runtime Interface）。只要 container runtime 符合 OCI（Open Container Initiative）標準，就可以使用。
+
+但是 Docker 的 runtime 沒有遵守 OCI 標準，所以 Kubernetes 為了 Docker 開發了一個中間層 dockershim，這個中間層將 Docker 的 API 轉換成 CRI 的 API。
+
+Kubernetes 1.24 版本之後，移除了 dockershim 的支援。因為 Docker 的 image 符合 OCI 標準，所以依舊可以可以使用 Docker 的 image。
+
+Kubernetes 目前是使用 containerd 作為 container runtime engine。 Containerd 是 Docker 的一部分，是一個高度可擴展的 container runtime engine。
