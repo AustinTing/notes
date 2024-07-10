@@ -36,3 +36,7 @@ Cluster 是指一組由 kubernetes 管理的計算、儲存、網路資源，這
 Kubernetes 1.24 版本之後，移除了 dockershim 的支援。因為 Docker 的 image 符合 OCI 標準，所以依舊可以可以使用 Docker 的 image。
 
 Kubernetes 目前是使用 containerd 作為 container runtime engine。 Containerd 是 Docker 的一部分，是一個高度可擴展的 container runtime engine。
+
+## Kube Scheduler
+
+Kube Scheduler 是一個 Kubernetes 的 component，它負責將考慮資源的使用情況及 Pod 的需求，將 Pod **規劃** 至 Node 上，本身不會執行任何 Pod。
