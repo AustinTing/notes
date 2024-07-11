@@ -40,3 +40,7 @@ Kubernetes 目前是使用 containerd 作為 container runtime engine。 Contain
 ## Kube Scheduler
 
 Kube Scheduler 是一個 Kubernetes 的 component，它負責將考慮資源的使用情況及 Pod 的需求，將 Pod **規劃** 至 Node 上，本身不會執行任何 Pod。
+
+# Pod
+
+Pod 是 Kubernetes 的最小單位，它是一個或多個 container 的集合，這些 container 共享相同的 network namespace、IPC namespace、PID namespace、以及 volumes。
