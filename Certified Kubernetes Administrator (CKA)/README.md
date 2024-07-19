@@ -44,3 +44,32 @@ Kube Scheduler 是一個 Kubernetes 的 component，它負責將考慮資源的�
 # Pod
 
 Pod 是 Kubernetes 的最小單位，它是一個或多個 container 的集合，這些 container 共享相同的 network namespace、IPC namespace、PID namespace、以及 volumes。
+
+# YAML
+
+Kubernetes 使用 YAML 來定義物件，例如 Pod、Service、Deployment 等等。
+
+YAML 的格式是依據 key-value pair，並且使用縮排來表示物件之間的關係。
+
+如果是 dictionary，使用 `key: value` 的格式，如果是 list，使用 `- value` 的格式。
+
+主要有四個 top level 的物件： apiVersion、kind、metadata、spec。
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    tier: frontend
+spec:
+  containers
+  - name: nginx
+    image: nginx:1.14
+  - name: busybox
+    image: busybox
+```
+
+
+
