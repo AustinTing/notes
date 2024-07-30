@@ -14,9 +14,8 @@ Parent 和 child 都可以訪問文件，也都可以寫入。
 
 **4. exec() 系列函數的意義？**
 
-有用到再看好🤪。
 - [Linux 系統編程之進程（五）：exec系列函數（execl,execlp,execle,execv,execvp)使用](https://jasonblog.github.io/note/linux_system/linuxxi_tong_bian_cheng_zhi_jin_cheng_ff08_wu_ff09.html)
-- [execlp、execvp用法與範例])(https://burweisnote.blogspot.com/2017/08/execlpexecvp.html)
+- [execlp、execvp用法與範例](https://burweisnote.blogspot.com/2017/08/execlpexecvp.html)
 
 **5. fork() 後，wait() 會返回什麼？如果 child 用的話會怎樣？**
 
@@ -27,3 +26,6 @@ Parent 和 child 都可以訪問文件，也都可以寫入。
  waitpid() 需要給定 pid 及回傳狀態，讓 parent 知道要等到什麼時候。
  - [wait vs. waitpid](https://wirelessr.gitbooks.io/working-life/content/wait_vs_waitpid.html)
  - [linux中waitpid及wait的用法](https://www.twblogs.net/a/5b83317c2b717766a1eb53be)
+
+**7. 如果在 child 關閉 STDOUT_FILENO 後，printf 會出現什麼？**
+
