@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
   }
   else if (rc == 0)
   { // child: redirect standard output to a file
-    close(STDOUT_FILENO);
+    close(STDIN_FILENO);
     open("./p4.output", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
     // now exec "wc"...
     char *myargs[3];
