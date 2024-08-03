@@ -35,6 +35,7 @@ kubectl **get** [resource]: 取得資源列表
 - `kubectl get pods`
 - `kubectl get replicasets` or `kubectl get rs`
 - `kubectl get all`
+- `kubectl get pods --all-namespaces`
 
 kubectl **describe** [resource] [resource-name]: 取得資源的詳細資訊
 
@@ -56,9 +57,14 @@ kubectl **scale** [resource] [resource-name] **--replicas=**[number]: 調整資�
 - `kubectl scale --replicas=3 -f replicaset-definition.yaml`: 也可以使用 yaml 檔案來調整數量。
   - 但這樣做的話，不會改變 yaml 檔案中的 replicas 的數量，只會在記憶體中改變。
 
+kubectl **config** set-context $(kubectl config current-context) --namespace=dev
 
+- 設定當前的 context 的 namespace 為 dev。
 
+kubectl **expose** [resource] [resource-name] --type=[service-type] --name=[service-name] --port=[port]: 暴露服務，也是創建服務的一種方式
 
-
-
+- `kubectl expose pod my-nginx-pod --type=NodePort --name=my-nginx-service --port=80` 
+  - 幾乎相同於 `kubectl create service nodeport my-nginx-service --tcp=80:80 --node-port=30080`
+  - 差別在於用 expose 時，pod's label 會被自動加入到 service 的 selector 中。
+  - 但是用 create service 時，要自己加入 selector。
 

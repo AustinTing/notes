@@ -146,31 +146,15 @@ Service 是一個抽象層，它定義了一個 Pod 的訪問方式。Service �
 
 主要功能：
 
-- ClusterIP：在 cluster 內部提供一個虛擬 IP，其他物件可以通過這個 IP 訪問 Service。
 - NodePort：在每個 Node 上開放一個 Port，其他物件可以通過 Node 的 IP 和 Port 訪問 Service。
+- ClusterIP：在 cluster 內部提供一個虛擬 IP，其他物件可以通過這個 IP 訪問 Service。
 - LoadBalancer：在 cloud provider 上提供一個 LoadBalancer，其他物件可以通過 LoadBalancer 訪問 Service。
-- ExternalName：將 Service 對應到一個外部的 DNS 名稱。
-
-以下是一個 service 的 yaml 檔案：
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-service
-spec:
-  selector:
-    app: myapp
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 9376
-  type: ClusterIP
-```
 
 ### NodePort
 
-NodePort 是 Service 的一種類型，它會在每個 Node 上開放一個 Port，其他物件可以通過 Node 的 IP 和 Port 訪問 Service。
+NodePort 是 Service 的一種 type，它會在每個 Node 上開放一個 Port，其他物件可以通過 Node 的 IP 和 Port 訪問 Service 及其背後的 Pod。
+
+![NodePort](assets/service-nodeport.drawio.png)
 
 以下是一個 NodePort 的 yaml 檔案：
 
@@ -181,11 +165,111 @@ metadata:
   name: webapp-service
 spec:
   type: NodePort
-  selector:
-    name: simple-webapp
+  selector: # 這個 Service 會將流量轉發到這些 label 的 Pod。也就是 pod-definition 中 metadata.labels 的部分。
+    app: myapp
+    type: frontend
   ports:
-    - protocol: TCP
-      port: 8080 # Service 暴露的端口號，客戶端會通過這個端口訪問 Service。
-      targetPort: 8080 # Service 會將流量轉發到 Pod 的這個端口。
+    - targetPort: 80 # Service 會將流量轉發到 Pod 的這個端口。
       nodePort: 30080 # NodePort，在每個 Node 上打開的端口號，使得外部可以通過 <NodeIP>:30080 訪問這個 Service。
+      port: 80 # Service 暴露的端口號。
 ```
+
+假如有多個一樣的 pod 在同一個 Node ，service 會將流量**隨機**平均分配到這些 pod 上。
+
+就算是不同的 Node ，service 也會跨 Node 分配流量。（只要不同 Node 都設定一樣的 nodePort 和 targetPort）
+
+### ClusterIP
+
+ClusterIP 是 Service 的一種 type，它會在 cluster 內部提供一個虛擬 IP，其他物件可以通過這個 IP 訪問 Service 及其背後的 Pod。
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: ClusterIP
+  selector: # 這個 Service 會將流量轉發到這些 label 的 Pod。也就是 pod-definition 中 metadata.labels 的部分。
+    app: myapp
+    type: frontend
+  ports:
+    - targetPort: 80 # Service 會將流量轉發到 Pod 的這個端口。
+      port: 80 # Service 暴露的端口號。
+      # 注意這邊沒有 nodePort
+```
+
+### LoadBalancer
+
+LoadBalancer 是 Service 的一種 type，它會在 cloud provider 上提供一個 LoadBalancer，LoadBalancer 會分配流量到 Service 及其背後的 Pod。
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: LoadBalancer
+  ports:
+    - targetPort: 80 
+      nodePort: 30080
+      port: 80
+```
+
+## Namespace
+
+Namespace 是 Kubernetes 的一個概念，它可以將 cluster 分成多個虛擬 cluster，每個 namespace 都有自己的資源，例如 Pod、Service、Deployment 等等。
+
+創建 namespace 的 yaml 檔案：
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+```
+
+在同一個 namespace 內的資源可以直接訪問，而在不同 namespace 的資源則需要使用 DNS name 來訪問。
+
+例如，如果要訪問不同 namespace 的 service，可以使用 `<service-name>.<namespace>.svc.cluster.local` 來訪問。
+
+如果資源要創在不是 default namespace，可以使用 `-n` 或 `--namespace` 來指定 namespace。或是 yaml 檔案中的 `metadata.namespace`。
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  namespace: dev # 指定 namespace
+spec:
+  ...
+```
+
+Namespace 也可以設定 resource quota，限制 namespace 內的資源使用量。
+
+```yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: dev-quota
+  namespace: dev
+spec:
+  hard:
+    pods: "10" # 限制在 dev namespace 中最多可以運行 10 個 Pod。
+    requests.cpu: "4" # 限制在 dev namespace 中所有 Pod 總共最多可以使用 4 個 CPU。
+    requests.memory: 5Gi # 限制在 dev namespace 中所有 Pod 總共最多可以使用 5Gi 的記憶體。
+    limits.cpu: "10" 
+    limits.memory: 10Gi 
+```
+
+- requests.cpu: "4"：在 dev namespace 中所有 Pod 請求的 CPU 資源總和最多為 4 個 CPU 核心。
+  - 例子：假設有兩個 Pod：
+	  - Pod A 請求 1 個 CPU。
+    - Pod B 請求 2 個 CPU。
+    - 總請求為 3 個 CPU，此時還可以再請求 1 個 CPU。如果總請求超過 4 個 CPU，則無法創建或更新 Pod 來請求更多的 CPU 資源。
+
+- limits.cpu: "10"：在 dev namespace 中所有 Pod 設置的 CPU 上限總和最多為 10 個 CPU 核心。
+  - 例子：假設有三個 Pod：
+    - Pod A 設置的 CPU 上限為 3 個 CPU。
+    - Pod B 設置的 CPU 上限為 4 個 CPU。
+    - Pod C 設置的 CPU 上限為 2 個 CPU。
+    - 總上限為 9 個 CPU，此時還可以再設置 1 個 CPU 的上限。如果總上限超過 10 個 CPU，則無法創建或更新 Pod 來設置更高的 CPU 上限。
