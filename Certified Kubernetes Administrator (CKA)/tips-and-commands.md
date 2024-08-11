@@ -24,7 +24,8 @@
 
 kubectl **run** [name] --image=[image] --restart=[restart-policy]: 創建 Pod
 
-- `kubectl run nginx --image=nginx --restart=Never`
+- `kubectl run nginx --image=nginx --restart=Never` (注意 run 後面是直接加 pod 的名稱)
+- `kubectl run redis-pod --image=redis:alpine --labels=tier=db`
 
 kubectl **create** -f [file]: 創建資源。如果資源已經存在，則會報錯。
 
