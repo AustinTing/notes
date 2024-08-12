@@ -18,3 +18,6 @@ Lambda
 
 [用 `iostat` 檢查設備狀況](https://github.com/penglongli/blog/issues/74)
 - 如果是部屬在他人的 server 上，可以查看 `%steal`。如果 `%steal` 高，代表 CPU 被其他人的 VM 佔用了。
+
+常見架構的Data Transfer 的成本：[Overview of Data Transfer Costs for Common Architectures](https://aws.amazon.com/cn/blogs/architecture/overview-of-data-transfer-costs-for-common-architectures/)
+
