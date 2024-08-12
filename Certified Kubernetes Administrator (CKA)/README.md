@@ -273,3 +273,20 @@ spec:
     - Pod B 設置的 CPU 上限為 4 個 CPU。
     - Pod C 設置的 CPU 上限為 2 個 CPU。
     - 總上限為 9 個 CPU，此時還可以再設置 1 個 CPU 的上限。如果總上限超過 10 個 CPU，則無法創建或更新 Pod 來設置更高的 CPU 上限。
+
+## Imperative vs Declarative 
+
+如果用 Imerative command 會讓其他人很難追蹤，因為他們不知道預期的狀態是怎樣，也無法難以追蹤歷史更新。
+
+用 Imperative command 也需要人為地檢查目前狀態，更新 pod 或設定。
+
+- 比如要更新一個物件，你要先確定他有沒有存在。
+
+Declarative command 則是使用 `kubectl apply -f <file>` 來創建或更新物件。
+
+- 不管是創建或更新，系統都會自動幫你檢查目前的狀態，並且只會更新差異的部分。
+
+# Further Reading
+
+[同樣 2vCPU 的 Kubernetes Container 為什麼會比 VM 效能差](https://www.hwchiu.com/docs/2023/container-vm)
+

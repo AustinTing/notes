@@ -22,6 +22,10 @@
 
 # Commands
 
+## Imperative Commands
+
+**Create Objects**
+
 kubectl **run** [name] --image=[image] --restart=[restart-policy]: 創建 Pod
 
 - `kubectl run nginx --image=nginx --restart=Never` (注意 run 後面是直接加 pod 的名稱)
@@ -29,21 +33,15 @@ kubectl **run** [name] --image=[image] --restart=[restart-policy]: 創建 Pod
 
 kubectl **create** -f [file]: 創建資源。如果資源已經存在，則會報錯。
 
-kubectl **apply** -f [file]: 創建或更新資源
 
-kubectl **get** [resource]: 取得資源列表
+kubectl **expose** [resource] [resource-name] --type=[service-type] --name=[service-name] --port=[port]: 暴露服務，也是創建服務的一種方式
 
-- `kubectl get pods`
-- `kubectl get replicasets` or `kubectl get rs`
-- `kubectl get all`
-- `kubectl get pods --all-namespaces`
+- `kubectl expose pod my-nginx-pod --type=NodePort --name=my-nginx-service --port=80` 
+  - 幾乎相同於 `kubectl create service nodeport my-nginx-service --tcp=80:80 --node-port=30080`
+  - 差別在於用 expose 時，pod's label 會被自動加入到 service 的 selector 中。
+  - 但是用 create service 時，要自己加入 selector。
 
-kubectl **describe** [resource] [resource-name]: 取得資源的詳細資訊
-
-- `kubectl describe pod [pod-name]`
-- `kubectl describe replicaset [replica-set-name]`
-
-kubectl **delete** [resource] [resource-name]: 刪除資源
+**Update Objects**
 
 kubectl **edit** [resource] [resource-name]: 編輯資源
 
@@ -62,10 +60,25 @@ kubectl **config** set-context $(kubectl config current-context) --namespace=dev
 
 - 設定當前的 context 的 namespace 為 dev。
 
-kubectl **expose** [resource] [resource-name] --type=[service-type] --name=[service-name] --port=[port]: 暴露服務，也是創建服務的一種方式
+**Get Objects**
 
-- `kubectl expose pod my-nginx-pod --type=NodePort --name=my-nginx-service --port=80` 
-  - 幾乎相同於 `kubectl create service nodeport my-nginx-service --tcp=80:80 --node-port=30080`
-  - 差別在於用 expose 時，pod's label 會被自動加入到 service 的 selector 中。
-  - 但是用 create service 時，要自己加入 selector。
+kubectl **get** [resource]: 取得資源列表
 
+- `kubectl get pods`
+- `kubectl get replicasets` or `kubectl get rs`
+- `kubectl get all`
+- `kubectl get pods --all-namespaces`
+
+kubectl **describe** [resource] [resource-name]: 取得資源的詳細資訊
+
+- `kubectl describe pod [pod-name]`
+- `kubectl describe replicaset [replica-set-name]`
+
+**Delete Objects**
+
+kubectl **delete** [resource] [resource-name]: 刪除資源
+
+
+## Declarative Commands
+
+kubectl **apply** -f [file]: 創建或更新資源
