@@ -284,7 +284,67 @@ spec:
 
 Declarative command 則是使用 `kubectl apply -f <file>` 來創建或更新物件。
 
-- 不管是創建或更新，系統都會自動幫你檢查目前的狀態，並且只會更新差異的部分。
+- Kubernetes 會根據 yaml 檔案比較目前 Kubernetes 中不同的部分，直接更新或創建物件。
+- 比較的原理是，每次 Kubernetes 按照 yaml 檔（local file）更新 Kubernetes Live Object Configuration(在 RAM 中)後，會把當下的狀態存去 Last Applied Configuration 中（JSON 格式，也是存在 Live Object Configuration 中，metadata.annotations.**kubectl.kubernetes.io/last-applied-configuration**）。下次再更新時，會先 yaml 和 Last Applied Configuration 比較，再更新差異的部分。
+- 只有用 apply 才會將 yaml 檔中的所有資訊都存到 Last Applied Configuration 中。
+
+## 補充
+
+** expose 文件中的...Also if no labels are specified, the new service will re-use the labels from the resource it exposes.**
+
+目前看到 labels 有兩種，一種是 `metadata.labels` ，一種是 `spec.selector` 。
+
+`metadata.labels` 是物件自己的 labels ，不會影響此物件如何選擇其他物件。
+
+`spec.selector` 目標資源的 labels 。此物件根據此 labels 選擇目標資源。
+
+而這句意思就是說當創建 Service 時，如果沒有指定 `metadata.labels` ，則會使用目標資源的 labels 來設定。
+
+假設有一個 Deployment 如下：
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+  labels:
+    environment: production
+    version: v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: my-image
+```
+
+執行完 `kubectl expose deployment my-deployment --name=my-service`，新的 Service 如下：
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+  labels:
+    environment: production
+    version: v1
+spec:
+  selector:
+    app: my-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+```
+
+可以發現 environment 和 version 的 labels 也被 Service 使用。
 
 # Further Reading
 

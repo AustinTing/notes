@@ -43,7 +43,7 @@ kubectl **expose** [resource] [resource-name] --type=[service-type] --name=[serv
 
 **Update Objects**
 
-kubectl **edit** [resource] [resource-name]: 編輯資源
+kubectl **edit** [resource]/[resource-name]: 編輯資源
 
 - `kubectl edit replicaset [replica-set-name]`: 編輯 ReplicaSet 。
 - 要注意編輯完會立刻生效。
