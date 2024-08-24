@@ -29,8 +29,9 @@
 - `ssh -vvv user@host`: 查看 ssh 連線過程。
   - `-vvv`：最詳細的 log。
 - `grep`
-  - `-E 'regex'`：使用正規表達式。
-  - `-i 'string'`：忽略大小寫。
+  - `grep -E 'regex'`：使用正規表達式。
+  - `grep -i 'string'`：忽略大小寫。
+  - `grep -C 2 'string'`：在找到的目標前後各顯示 2 行。
 - `nmap -sP 192.168.1.0/24`: 掃描網路上的裝置。
 - `nmap -p 22 --open -sV 192.168.1.0/24`: 掃描網路上的裝置，並列出有開啟 22 port 的裝置。
 - `curl http://myexternalip.com/raw` or `curl http://ipecho.net/plain`: 查看外部 IP。
