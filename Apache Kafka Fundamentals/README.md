@@ -174,6 +174,17 @@ await this.consumer.run({
 });
 ```
 
+- 如果某個事情要處理很久，可以先定期 heartbeat 來確保 consumer 不會被判定為死亡。
+
+```typescript
+const timer = setInterval(async () => {
+  await heartbeat();
+  console.log('heartbeat every 5000 ms');
+}, 5000);
+clearInterval(timer);
+
+```
+
 
 
 
