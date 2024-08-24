@@ -107,7 +107,7 @@ spec:
 - `replicas` 指定了要創建的 Pod 數量。
 - `template` 定義了要創建的 Pod 的規格，其實就是 pod 的 yaml 中，metadata 和 spec 的部分。
 - `selector` 用來選擇要操作的 Pod。ReplicaSet 會根據 selector 選擇符合條件的 Pod，並且對這些 Pod 做操作。這樣就算有些 pod 是之前創建的，也會被 ReplicaSet 納入管理。
-- `template` 和  `selector` 這**兩個欄位中的 `labels` 必須是一樣的**。
+- ‼️`template` 和  `selector` 這**兩個欄位中的 `labels` 必須是一樣的**。
 
 
 ## Deployment

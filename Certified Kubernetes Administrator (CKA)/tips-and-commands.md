@@ -78,6 +78,14 @@ kubectl **describe** [resource] [resource-name]: 取得資源的詳細資訊
 
 kubectl **delete** [resource] [resource-name]: 刪除資源
 
+**Replace Objects**
+
+Replace + force 可以強制刪除資源後重建。
+
+```bash
+$ kubectl replace --force -f nginx.yaml
+```
+
 
 ## Declarative Commands
 
