@@ -217,7 +217,7 @@ spec:
 
 ## Namespace
 
-Namespace 是 Kubernetes 的一個概念，它可以將 cluster 分成多個虛擬 cluster，每個 namespace 都有自己的資源，例如 Pod、Service、Deployment 等等。
+Namespace 是 Kubernetes 的其中一個概念，它可以將 cluster 分成多個虛擬 cluster，每個 namespace 都有自己的資源，例如 Pod、Service、Deployment 等等。
 
 創建 namespace 的 yaml 檔案：
 

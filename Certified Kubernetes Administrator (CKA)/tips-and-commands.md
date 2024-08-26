@@ -86,7 +86,6 @@ Replace + force 可以強制刪除資源後重建。
 $ kubectl replace --force -f nginx.yaml
 ```
 
-
 ## Declarative Commands
 
 kubectl **apply** -f [file]: 創建或更新資源
