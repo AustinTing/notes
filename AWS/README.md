@@ -10,6 +10,13 @@ sudo chown pi:pi /var/log/aws-iot-device-client
 
 # [Fundamentals of networking in AWS](https://medium.com/codenation-engineering/fundamentals-of-networking-in-aws-3ad3d0dc01dd)
 
+# S3
+
+[How an empty S3 bucket can make your AWS bill explode](https://medium.com/@maciej.pocwierz/how-an-empty-s3-bucket-can-make-your-aws-bill-explode-934a383cb8b1)
+
+- bucket name 建議前面加個亂數
+- 讀 S3 要指定 region
+
 
 
 # Others
