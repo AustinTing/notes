@@ -26,6 +26,15 @@ git commit --amend --author="austinting-company <austinting@company.com>"
 git rebase --continue
 ```
 
+### 切換本地沒有但存在於遠端的 branch
+
+```bash
+$ git fetch
+$ git checkout -b <branch-name> origin/<branch-name>
+```
+
+
+
 ### 為特定專案設定不同作者
 
 ```
